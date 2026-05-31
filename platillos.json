@@ -1,0 +1,401 @@
+[
+  {
+    "name": "Tamales de elote",
+    "type": "Desayuno",
+    "difficulty": "Baja",
+    "ingredients": "Tamal de elote, aceite",
+    "extras": "Crema"
+  },
+  {
+    "name": "Frijoles, arroz y queso",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Frijoles, Arroz, queso",
+    "extras": "Sardina o atún"
+  },
+  {
+    "name": "Pan bagguete con aguacate",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Bagguete, frijoles, aguacate, queso cheddar, lechuga",
+    "extras": "Ketchup y mayonesa"
+  },
+  {
+    "name": "Pasta Alfredo con brócoli y almendra",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Pasta, salsa alfredo, brocoli, almendras",
+    "extras": "Pollo"
+  },
+  {
+    "name": "Crema de brocoli",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Crema de brocoli, brocoli, Pizza Mix",
+    "extras": "Papa"
+  },
+  {
+    "name": "Burrito de humus",
+    "type": "Desayuno",
+    "difficulty": "Alta",
+    "ingredients": "Wrap, humus, zanahoria, zuquini, lechuga",
+    "extras": "Jalapeños, jamon"
+  },
+  {
+    "name": "Hotdogs",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Pan, carne de soya, salsas, escabeche",
+    "extras": "queso rallado"
+  },
+  {
+    "name": "Tamales pisquez",
+    "type": "Desayuno",
+    "difficulty": "Baja",
+    "ingredients": "Tamales, queso rallado",
+    "extras": "Salsa de tomate"
+  },
+  {
+    "name": "Tortitas de papa",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Papa, queso, harina",
+    "extras": "Mayonesa y ketchup"
+  },
+  {
+    "name": "Pizzitas",
+    "type": "Desayuno",
+    "difficulty": "Alta",
+    "ingredients": "Pan pizza, queso, salsa de tomate, cebolla y chile",
+    "extras": "jalapeños, aceitunas, jamon"
+  },
+  {
+    "name": "Muffin con aguacate",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Muffin, frijoles, aguacate, lechuga",
+    "extras": "huevo estrellado"
+  },
+  {
+    "name": "Quesadilla con chimol y frijoles",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Rapiditas de trigo, quesillo, frijoles y chimol",
+    "extras": "Espinaca, hongos, zuquini, elote"
+  },
+  {
+    "name": "Burrito de soya",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Wrap, soya, lechuga, queso y frijoles",
+    "extras": "salsa jalapeño"
+  },
+  {
+    "name": "Plátano frito con frijoles",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Platano, frijoles, queso",
+    "extras": "Crema"
+  },
+  {
+    "name": "Lasagna con Zuquini",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Lasgna, salsa prego, zuquini, albahaca, pizza mix",
+    "extras": "Elote, espinaca"
+  },
+  {
+    "name": "Atol de avena",
+    "type": "Snack",
+    "difficulty": "Baja",
+    "ingredients": "Leche de soya, avena",
+    "extras": "Almendras"
+  },
+  {
+    "name": "Hamburguesas",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Pan de hamburguesa, torta de garbanzo, lechuga, tomate, salsas",
+    "extras": "Pepinillos, jalapeños"
+  },
+  {
+    "name": "Panini con vegetales y aguacate",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Pan de barra, frijoles, aguacate, chile y cebolla salteados",
+    "extras": "jalapeño, jamon"
+  },
+  {
+    "name": "Papa gratinada",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Papa, pizza mix, brocoli, elote",
+    "extras": "Aceitunas negras"
+  },
+  {
+    "name": "Pastelitos de papa",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Mezcla de pastelito, papa",
+    "extras": "Aguacate, curtido de vingre"
+  },
+  {
+    "name": "Enchiladas",
+    "type": "Desayuno",
+    "difficulty": "Alta",
+    "ingredients": "Mezcla de pastelito, frijoles, queso, lechuga",
+    "extras": "huevo duro"
+  },
+  {
+    "name": "Dobladas de frijoles y queso",
+    "type": "Desayuno",
+    "difficulty": "Alta",
+    "ingredients": "Harina de maiz, frijoles, quesillo",
+    "extras": "curtido, salsa jalapeña, aguacate"
+  },
+  {
+    "name": "Licuado de guineo",
+    "type": "Snack",
+    "difficulty": "Baja",
+    "ingredients": "Leche de soya, guineo",
+    "extras": "Café"
+  },
+  {
+    "name": "Granola con leche",
+    "type": "Snack",
+    "difficulty": "Baja",
+    "ingredients": "Granola, leche",
+    "extras": "Semillas, pasas"
+  },
+  {
+    "name": "Pan integral con aguacate y hongos",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Pan de barra, queso crema, aguacate, hongos",
+    "extras": "Lechuga"
+  },
+  {
+    "name": "Espaguetis",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Espagueti, salsa prego",
+    "extras": "Hongos, crema"
+  },
+  {
+    "name": "Nachos con soya",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Nachos, frijoles licuados, queso, lechuga",
+    "extras": "Crema, jalapeños"
+  },
+  {
+    "name": "Jalapeños rellenos",
+    "type": "Snack",
+    "difficulty": "Media",
+    "ingredients": "Jalapeño, quesillo",
+    "extras": "rebozado"
+  },
+  {
+    "name": "Brocheta de salchicha",
+    "type": "Snack",
+    "difficulty": "Media",
+    "ingredients": "Salchicha, tortilla de trigo",
+    "extras": "Rebozado"
+  },
+  {
+    "name": "Papas fritas",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Papas",
+    "extras": "Salsas"
+  },
+  {
+    "name": "Tacos de soya",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Soya, tortillas, chimol",
+    "extras": "Aguacate, curtido de rabano"
+  },
+  {
+    "name": "Flautas de papa",
+    "type": "Desayuno",
+    "difficulty": "Alta",
+    "ingredients": "Tortillas de maiz, papa",
+    "extras": "salsa verde, aguacate"
+  },
+  {
+    "name": "Platano sancochado",
+    "type": "Desayuno",
+    "difficulty": "Baja",
+    "ingredients": "Platano y canela",
+    "extras": "Miel"
+  },
+  {
+    "name": "Chilaquilas con salsa de tomate",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Tortillas, quesillo, salsa",
+    "extras": "curtido"
+  },
+  {
+    "name": "Showmein de ramen",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Ramen, brocoli, zanahoria",
+    "extras": "Almendras, mani, jengibre"
+  },
+  {
+    "name": "Dobladas con tortilla de taco",
+    "type": "Desayuno",
+    "difficulty": "Baja",
+    "ingredients": "Tortilla de maiz, quesillo",
+    "extras": "Espinaca, hongos, zuquini, elote"
+  },
+  {
+    "name": "Pan arabe con soya",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Soya, pan arabe, quesillo",
+    "extras": "Salsa chipotle"
+  },
+  {
+    "name": "Papa Hasbrown",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Papa, harina",
+    "extras": "Mayonesa y ketchup"
+  },
+  {
+    "name": "Pancakes de guineo",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Pancakes, guineo",
+    "extras": "Almendras, pasas"
+  },
+  {
+    "name": "Crema de hongos",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Crema de hongos, brocoli, hongos",
+    "extras": "papa, cilantro"
+  },
+  {
+    "name": "Canelones de soya y papa",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Canelones, soya y pure de papa, salsa prego",
+    "extras": "Espinaca, hongos, zuquini, elote"
+  },
+  {
+    "name": "Arroz negrito con elote asado",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Arroz, sopa de frijoles, queso",
+    "extras": "Aguacate, elote"
+  },
+  {
+    "name": "Papas con mostaza",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Papas, mostaza",
+    "extras": "queso rallado, frijoles fritos"
+  },
+  {
+    "name": "Pure de papa con elote asado",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Pure de papa, leche de soya, margarina, elote",
+    "extras": "brocoli"
+  },
+  {
+    "name": "Lasagna de berengena",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Lasgna, salsa prego, berengena, albahaca, pizza mix",
+    "extras": "Espinaca, hongos, zuquini, elote"
+  },
+  {
+    "name": "Rollitos de soya rebozado",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Tortilla de trigo, zanahoria, zuqini, carne de soya",
+    "extras": "Lechuga"
+  },
+  {
+    "name": "Pan frances con frijoles y queso",
+    "type": "Desayuno",
+    "difficulty": "Baja",
+    "ingredients": "Pan frances, frijoles licuado, queso rallado",
+    "extras": "Huevo"
+  },
+  {
+    "name": "Pan con mantequilla de mani y guineo",
+    "type": "Desayuno",
+    "difficulty": "Baja",
+    "ingredients": "Pan de barra, mantequilla de mani, guineo",
+    "extras": "Nutella, semillas"
+  },
+  {
+    "name": "Tofu rebosado con arroz",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Tofu, arroz, salsas",
+    "extras": "Queso, aguacate"
+  },
+  {
+    "name": "Plátano rebosado",
+    "type": "Desayuno",
+    "difficulty": "Alta",
+    "ingredients": "Plátano, harina, fécula de maíz",
+    "extras": "Aguacate"
+  },
+  {
+    "name": "Aros de cebolla",
+    "type": "Snack",
+    "difficulty": "Media",
+    "ingredients": "Cebolla, harina",
+    "extras": "Mayonesa con cilantro"
+  },
+  {
+    "name": "Sopa de tortillas",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Sopa de tortilla, nachos, aguacate, queso, cilantro",
+    "extras": "Tocino de churritos"
+  },
+  {
+    "name": "Enfrijoladas con quesillo",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Tortilla de maíz, frijoles, quesillo, cebolla y cilantro",
+    "extras": "Queso rallado y crema"
+  },
+  {
+    "name": "Papa asada rellena de queso",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Papá, queso, cilantro",
+    "extras": "Jamón"
+  },
+  {
+    "name": "Patacones de plátano con frijoles",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Plátano verde, frijoles licuados y queso",
+    "extras": "Chimol"
+  },
+  {
+    "name": "Humus",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Garbanzo, ajonjolí, ajo y margarina",
+    "extras": "Cilantro"
+  },
+  {
+    "name": "Pan de masa madre con aguacate",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Pan de masa madre, frijol y queso",
+    "extras": "Ketchup y mayonesa"
+  }
+]
