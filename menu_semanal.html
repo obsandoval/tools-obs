@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú Semanal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --cream: #faf6ef;
+      --warm: #f0e8d8;
+      --brown: #3d2b1f;
+      --rust: #c4622d;
+      --sage: #6b7c5c;
+      --gold: #d4a843;
+      --light-sage: #e8eedf;
+      --border: #d6c9b4;
+      --shadow: rgba(61, 43, 31, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--cream);
+      background-image:
+        radial-gradient(ellipse at 10% 20%, rgba(212, 168, 67, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, rgba(107, 124, 92, 0.07) 0%, transparent 50%);
+      font-family: 'Inter', sans-serif;
+      color: var(--brown);
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 48px 24px 32px;
+      position: relative;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      color: var(--brown);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      background-color: var(--warm);
+      transform: scale(1.05);
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background: var(--rust);
+      margin: 16px auto 0;
+      border-radius: 2px;
+    }
+
+    .header-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 200;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 500;
+      color: var(--brown);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--sage);
+      margin-top: 10px;
+      font-weight: 300;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 0 24px 40px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .btn .material-icons-round {
+      font-size: 18px;
+    }
+
+    .btn-primary {
+      background: var(--rust);
+      color: white;
+      box-shadow: 0 4px 14px rgba(196, 98, 45, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #b0561f;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(196, 98, 45, 0.35);
+    }
+
+    .btn-secondary {
+      background: var(--brown);
+      color: white;
+      box-shadow: 0 4px 14px rgba(61, 43, 31, 0.25);
+    }
+
+    .btn-secondary:hover {
+      background: #2d1e12;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--brown);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background: var(--warm);
+      border-color: var(--brown);
+    }
+
+    .btn svg {
+      flex-shrink: 0;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 0 24px 60px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .day-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 2px 12px var(--shadow);
+      transition: box-shadow 0.2s;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .day-card:hover {
+      box-shadow: 0 6px 24px rgba(61, 43, 31, 0.15);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .day-header {
+      background: var(--brown);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .day-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .day-date {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 300;
+    }
+
+    .meals-list {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .meal-row {
+      background: var(--cream);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .meal-row:hover {
+      border-color: var(--rust);
+    }
+
+    .meal-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      width: fit-content;
+    }
+
+    .meal-type-badge .material-icons-round {
+      font-size: 13px;
+    }
+
+    .badge-desayuno {
+      background: #fff3e0;
+      color: #e07b39;
+    }
+
+    .badge-almuerzo {
+      background: #e8f4ea;
+      color: #4a8c56;
+    }
+
+    .badge-snack {
+      background: #fce8f3;
+      color: #b5548a;
+    }
+
+    .meal-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--brown);
+      line-height: 1.3;
+      cursor: default;
+    }
+
+    .meal-extras {
+      font-size: 11px;
+      color: var(--sage);
+      font-style: italic;
+    }
+
+    .meal-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .meal-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--brown);
+      transition: all 0.15s;
+    }
+
+    .meal-btn:hover {
+      background: var(--warm);
+      border-color: var(--rust);
+      color: var(--rust);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(61, 43, 31, 0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(61, 43, 31, 0.25);
+      animation: modalIn 0.25s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.94);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.3rem;
+      margin-bottom: 18px;
+      color: var(--brown);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--brown);
+      background: var(--cream);
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--rust);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .filter-btn {
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: white;
+      color: var(--brown);
+      transition: all 0.15s;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: var(--rust);
+      border-color: var(--rust);
+      color: white;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .option-item {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .option-item:hover {
+      border-color: var(--rust);
+      background: var(--cream);
+    }
+
+    .option-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--brown);
+    }
+
+    .option-meta {
+      font-size: 11px;
+      color: var(--sage);
+    }
+
+    .modal-footer {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--brown);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(61, 43, 31, 0.3);
+      z-index: 200;
+      transition: transform 0.35s cubic-bezier(.34, 1.56, .64, 1);
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Difficulty dots */
+    .diff-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-left: 2px;
+    }
+
+    .diff-baja {
+      background: #4a8c56;
+    }
+
+    .diff-media {
+      background: #d4a843;
+    }
+
+    .diff-alta {
+      background: #c4622d;
+    }
+
+    @media (max-width: 600px) {
+      .week-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 11px 16px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a href="index.html" class="back-link" aria-label="Volver al inicio">
+      <span class="material-icons-round">arrow_back</span>
+    </a>
+    <h1>Menú Semanal</h1>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="generateRandom()">
+      <span class="material-icons-round">shuffle</span>
+      Generar aleatorio
+    </button>
+    <button class="btn btn-outline" onclick="openSearchModal()">
+      <span class="material-icons-round">search</span>
+      Buscar platillo
+    </button>
+    <button class="btn btn-outline" onclick="copyToClipboard()">
+      <span class="material-icons-round">content_copy</span>
+      Copiar texto
+    </button>
+    <button class="btn btn-secondary" onclick="exportPDF()">
+      <span class="material-icons-round">picture_as_pdf</span>
+      Exportar PDF
+    </button>
+  </div>
+
+  <div class="week-grid" id="weekGrid"></div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal">
+      <h3 id="modalTitle">Cambiar platillo</h3>
+      <input type="text" class="search-input" id="searchInput" placeholder="Buscar platillo..."
+        oninput="filterOptions()">
+      <div class="filter-row" id="filterRow">
+        <button class="filter-btn active" onclick="setFilter('Todos', this)">Todos</button>
+        <button class="filter-btn" onclick="setFilter('Desayuno', this)">Desayuno</button>
+        <button class="filter-btn" onclick="setFilter('Almuerzo', this)">Almuerzo</button>
+        <button class="filter-btn" onclick="setFilter('Snack', this)">Snack</button>
+      </div>
+      <div class="options-list" id="optionsList"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const MEAL_TYPES = ['Desayuno', 'Almuerzo'];
+
+    const RAW = `Tamales de elote,Desayuno,Baja,"Tamal de elote, aceite",Crema
+"Frijoles, arroz y queso",Almuerzo,Alta,"Frijoles, Arroz, queso",Sardina o atún
+Pan bagguete con aguacate,Desayuno,Media,"Bagguete, frijoles, aguacate, queso cheddar, lechuga",Ketchup y mayonesa
+Pasta Alfredo con brócoli y almendra,Almuerzo,Alta,"Pasta, salsa alfredo, brocoli, almendras",Pollo
+Crema de brocoli,Almuerzo,Alta,"Crema de brocoli, brocoli, Pizza Mix",Papa
+Burrito de humus,Desayuno,Alta,"Wrap, humus, zanahoria, zuquini, lechuga","Jalapeños, jamon"
+Hotdogs,Almuerzo,Media,"Pan, carne de soya, salsas, escabeche",queso rallado
+Tamales pisquez,Desayuno,Baja,"Tamales, queso rallado",Salsa de tomate
+Tortitas de papa,Almuerzo,Media,"Papa, queso, harina",Mayonesa y ketchup
+Pizzitas,Desayuno,Alta,"Pan pizza, queso, salsa de tomate, cebolla y chile","jalapeños, aceitunas, jamon"
+Muffin con aguacate,Desayuno,Media,"Muffin, frijoles, aguacate, lechuga",huevo estrellado
+Quesadilla con chimol y frijoles,Desayuno,Media,"Rapiditas de trigo, quesillo, frijoles y chimol","Espinaca, hongos, zuquini, elote"
+Burrito de soya,Almuerzo,Alta,"Wrap, soya, lechuga, queso y frijoles",salsa jalapeño
+Plátano frito con frijoles,Desayuno,Media,"Platano, frijoles, queso",Crema
+Lasagna con Zuquini,Almuerzo,Alta,"Lasgna, salsa prego, zuquini, albahaca, pizza mix","Elote, espinaca"
+Atol de avena,Snack,Baja,"Leche de soya, avena",Almendras
+Hamburguesas,Almuerzo,Alta,"Pan de hamburguesa, torta de garbanzo, lechuga, tomate, salsas","Pepinillos, jalapeños"
+Panini con vegetales y aguacate,Desayuno,Media,"Pan de barra, frijoles, aguacate, chile y cebolla salteados","jalapeño, jamon"
+Papa gratinada,Almuerzo,Media,"Papa, pizza mix, brocoli, elote",Aceitunas negras
+Pastelitos de papa,Almuerzo,Alta,"Mezcla de pastelito, papa","Aguacate, curtido de vingre"
+Enchiladas,Desayuno,Alta,"Mezcla de pastelito, frijoles, queso, lechuga",huevo duro
+Dobladas de frijoles y queso,Desayuno,Alta,"Harina de maiz, frijoles, quesillo","curtido, salsa jalapeña, aguacate"
+Licuado de guineo,Snack,Baja,"Leche de soya, guineo",Café
+Granola con leche,Snack,Baja,"Granola, leche","Semillas, pasas"
+Pan integral con aguacate y hongos,Desayuno,Media,"Pan de barra, queso crema, aguacate, hongos",Lechuga
+Espaguetis,Almuerzo,Media,"Espagueti, salsa prego","Hongos, crema"
+Nachos con soya,Desayuno,Media,"Nachos, frijoles licuados, queso, lechuga","Crema, jalapeños"
+Jalapeños rellenos,Snack,Media,"Jalapeño, quesillo",rebozado
+Brocheta de salchicha,Snack,Media,"Salchicha, tortilla de trigo",Rebozado
+Papas fritas,Almuerzo,Media,Papas,Salsas
+Tacos de soya,Almuerzo,Alta,"Soya, tortillas, chimol","Aguacate, curtido de rabano"
+Flautas de papa,Desayuno,Alta,"Tortillas de maiz, papa","salsa verde, aguacate"
+Platano sancochado,Desayuno,Baja,Platano y canela,Miel
+Chilaquilas con salsa de tomate,Desayuno,Media,"Tortillas, quesillo, salsa",curtido
+Showmein de ramen,Almuerzo,Alta,"Ramen, brocoli, zanahoria","Almendras, mani, jengibre"
+Dobladas con tortilla de taco,Desayuno,Baja,"Tortilla de maiz, quesillo","Espinaca, hongos, zuquini, elote"
+Pan arabe con soya,Desayuno,Media,"Soya, pan arabe, quesillo",Salsa chipotle
+Papa Hasbrown,Desayuno,Media,"Papa, harina",Mayonesa y ketchup
+Pancakes de guineo,Desayuno,Media,"Pancakes, guineo","Almendras, pasas"
+Crema de hongos,Almuerzo,Media,"Crema de hongos, brocoli, hongos","papa, cilantro"
+Canelones de soya y papa,Almuerzo,Media,"Canelones, soya y pure de papa, salsa prego","Espinaca, hongos, zuquini, elote"
+Arroz negrito con elote asado,Almuerzo,Media,"Arroz, sopa de frijoles, queso","Aguacate, elote"
+Papas con mostaza,Almuerzo,Media,"Papas, mostaza","queso rallado, frijoles fritos"
+Pure de papa con elote asado,Almuerzo,Media,"Pure de papa, leche de soya, margarina, elote",brocoli
+Lasagna de berengena,Almuerzo,Alta,"Lasgna, salsa prego, berengena, albahaca, pizza mix","Espinaca, hongos, zuquini, elote"
+Rollitos de soya rebozado,Almuerzo,Alta,"Tortilla de trigo, zanahoria, zuqini, carne de soya",Lechuga
+Pan frances con frijoles y queso,Desayuno,Baja,"Pan frances, frijoles licuado, queso rallado",Huevo
+Pan con mantequilla de mani y guineo,Desayuno,Baja,"Pan de barra, mantequilla de mani, guineo","Nutella, semillas"
+Tofu rebosado con arroz,Almuerzo,Alta,"Tofu, arroz, salsas","Queso, aguacate"
+Plátano rebosado,Desayuno,Alta,"Plátano, harina, fécula de maíz",Aguacate
+Aros de cebolla,Snack,Media,"Cebolla, harina",Mayonesa con cilantro
+Sopa de tortillas,Almuerzo,Media,"Sopa de tortilla, nachos, aguacate, queso, cilantro",Tocino de churritos
+Enfrijoladas con quesillo,Desayuno,Media,"Tortilla de maíz, frijoles, quesillo, cebolla y cilantro",Queso rallado y crema
+Papa asada rellena de queso,Almuerzo,Alta,"Papá, queso, cilantro",Jamón
+Patacones de plátano con frijoles,Almuerzo,Alta,"Plátano verde, frijoles licuados y queso",Chimol
+Humus,Almuerzo,Media,"Garbanzo, ajonjolí, ajo y margarina",Cilantro
+Pan de masa madre con aguacate,Desayuno,Media,"Pan de masa madre, frijol y queso",Ketchup y mayonesa`;
+
+    function parseCSV(raw) {
+      const lines = raw.trim().split('\n');
+      return lines.map(line => {
+        const cols = [];
+        let cur = '', inQ = false;
+        for (let i = 0; i < line.length; i++) {
+          if (line[i] === '"') { inQ = !inQ; }
+          else if (line[i] === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+          else { cur += line[i]; }
+        }
+        cols.push(cur.trim());
+        return { name: cols[0], type: cols[1], difficulty: cols[2], ingredients: cols[3], extras: cols[4] };
+      });
+    }
+
+    const dishes = parseCSV(RAW);
+    const byType = t => dishes.filter(d => d.type === t);
+
+    // State: weekMenu[dayIndex][mealType] = dish
+    let weekMenu = [];
+
+    function randFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateRandom() {
+      weekMenu = DAYS.map(() => {
+        const m = {};
+        MEAL_TYPES.forEach(t => { m[t] = randFrom(byType(t)); });
+        // Randomly add a snack sometimes
+        const snacks = byType('Snack');
+        if (Math.random() > 0.45) m['Snack'] = randFrom(snacks);
+        return m;
+      });
+      renderWeek();
+    }
+
+    function renderWeek() {
+      const grid = document.getElementById('weekGrid');
+      grid.innerHTML = '';
+      DAYS.forEach((day, di) => {
+        const card = document.createElement('div');
+        card.className = 'day-card';
+        card.style.animationDelay = `${di * 0.05}s`;
+
+        const header = `<div class="day-header">
+      <span class="day-name">${day}</span>
+    </div>`;
+
+        const meals = weekMenu[di];
+        const mealsHTML = Object.entries(meals).map(([type, dish]) => `
+      <div class="meal-row" id="meal-${di}-${type}">
+        <span class="meal-type-badge badge-${type.toLowerCase()}">${typeIcon(type)} ${type}</span>
+        <span class="meal-name">${dish.name}</span>
+        ${dish.extras ? `<span class="meal-extras">+ ${dish.extras}</span>` : ''}
+        <div class="meal-actions">
+          <button class="meal-btn" onclick="openModal(${di}, '${type}')">
+            <span class="material-icons-round" style="font-size: 12px;">edit</span>
+            Cambiar
+          </button>
+          <button class="meal-btn" onclick="shuffleOne(${di}, '${type}')">
+            <span class="material-icons-round" style="font-size: 12px;">shuffle</span>
+            Aleatorio
+          </button>
+        </div>
+      </div>`).join('');
+
+        card.innerHTML = header + `<div class="meals-list">${mealsHTML}</div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function typeIcon(t) {
+      if (t === 'Desayuno') return '<span class="material-icons-round">wb_sunny</span>';
+      if (t === 'Almuerzo') return '<span class="material-icons-round">restaurant</span>';
+      return '<span class="material-icons-round">local_bar</span>';
+    }
+
+    function shuffleOne(di, type) {
+      const pool = byType(type);
+      weekMenu[di][type] = randFrom(pool);
+      renderWeek();
+      showToast('¡Platillo cambiado!');
+    }
+
+    // Modal
+    let editTarget = null;
+    let currentFilter = 'Todos';
+
+    function openModal(di, type) {
+      editTarget = { di, type };
+      document.getElementById('modalTitle').textContent = `Cambiar ${type} del ${DAYS[di]}`;
+      document.getElementById('searchInput').value = '';
+      setFilter(type === 'Snack' ? 'Snack' : type, null, true);
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+
+    function openSearchModal() {
+      editTarget = 'copy_mode';
+      document.getElementById('modalTitle').textContent = 'Buscar y copiar platillo';
+      document.getElementById('searchInput').value = '';
+      setFilter('Todos', null, false);
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('open');
+      editTarget = null;
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('modalOverlay')) closeModal();
+    }
+
+    function setFilter(f, btn, skipRender) {
+      currentFilter = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      if (btn) { btn.classList.add('active'); }
+      else {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          if (b.textContent === f) b.classList.add('active');
+        });
+      }
+      if (!skipRender) filterOptions();
+      else buildOptions(dishes);
+    }
+
+    function filterOptions() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      let pool = currentFilter === 'Todos' ? dishes : dishes.filter(d => d.type === currentFilter);
+      if (q) pool = pool.filter(d => d.name.toLowerCase().includes(q));
+      buildOptions(pool);
+    }
+
+    function buildOptions(pool) {
+      const list = document.getElementById('optionsList');
+      if (!pool.length) {
+        list.innerHTML = `<p style="color:var(--sage);font-size:13px;text-align:center;padding:20px">No se encontraron platillos</p>`;
+        return;
+      }
+      list.innerHTML = pool.map(d => `
+    <div class="option-item" onclick="selectDish('${escStr(d.name)}')">
+      <span class="option-name">${d.name}</span>
+      <span class="option-meta">${d.type} · ${diffDots(d.difficulty)} ${d.difficulty}${d.extras ? ' · + ' + d.extras : ''}</span>
+    </div>`).join('');
+    }
+
+    function escStr(s) { return s.replace(/'/g, "\\'"); }
+
+    function diffDots(d) {
+      const cls = { 'Baja': 'diff-baja', 'Media': 'diff-media', 'Alta': 'diff-alta' };
+      return `<span class="diff-dot ${cls[d] || ''}"></span>`;
+    }
+
+    function selectDish(name) {
+      const dish = dishes.find(d => d.name === name);
+      if (!dish) return;
+      if (editTarget === 'copy_mode') {
+        navigator.clipboard.writeText(dish.name).then(() => {
+          showToast(`✓ Copiado: ${dish.name}`);
+        });
+        return;
+      }
+      if (!editTarget) return;
+      weekMenu[editTarget.di][editTarget.type] = dish;
+      renderWeek();
+      showToast(`"${dish.name}" seleccionado`);
+      closeModal();
+    }
+
+    // Clipboard
+    function copyToClipboard() {
+      if (!weekMenu.length) { showToast('Primero genera un menú'); return; }
+      let text = '';
+      DAYS.forEach((day, di) => {
+        text += `${day.toUpperCase()}\n`;
+        Object.entries(weekMenu[di]).forEach(([type, dish]) => {
+          text += `${dish.name}\n`;
+        });
+        text += '\n';
+      });
+      navigator.clipboard.writeText(text.trim()).then(() => showToast('✓ Copiado al portapapeles'));
+    }
+
+    // PDF
+    function exportPDF() {
+      if (!weekMenu.length) { showToast('Primero genera un menú'); return; }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      const W = 210, M = 18;
+      const colW = (W - M * 2 - 8) / 2;
+      let x = M, y = M;
+
+      // Background
+      doc.setFillColor(250, 246, 239);
+      doc.rect(0, 0, W, 297, 'F');
+
+      // Header bar
+      doc.setFillColor(61, 43, 31);
+      doc.rect(0, 0, W, 28, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.text('PLANIFICACIÓN', W / 2, 10, { align: 'center' });
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('MENÚ SEMANAL', W / 2, 20, { align: 'center' });
+
+      // Accent line
+      doc.setFillColor(196, 98, 45);
+      doc.rect(M, 30, W - M * 2, 1.2, 'F');
+
+      y = 38;
+
+      const typeColors = {
+        'Desayuno': [255, 243, 224],
+        'Almuerzo': [232, 244, 234],
+        'Snack': [252, 232, 243]
+      };
+      const typeText = {
+        'Desayuno': [224, 123, 57],
+        'Almuerzo': [74, 140, 86],
+        'Snack': [181, 84, 138]
+      };
+
+      DAYS.forEach((day, di) => {
+        const meals = Object.entries(weekMenu[di]);
+        const mealH = meals.length * 12 + 14;
+
+        const col = di % 2;
+        const xPos = M + col * (colW + 8);
+        if (col === 0 && di > 0) { y += mealH + 6; }
+
+        // Check new page
+        if (y + mealH > 280) { doc.addPage(); y = 18; doc.setFillColor(250, 246, 239); doc.rect(0, 0, W, 297, 'F'); }
+
+        // Card bg
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(xPos, y, colW, mealH, 3, 3, 'F');
+        doc.setDrawColor(214, 201, 180);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(xPos, y, colW, mealH, 3, 3, 'S');
+
+        // Day header
+        doc.setFillColor(61, 43, 31);
+        doc.roundedRect(xPos, y, colW, 10, 3, 3, 'F');
+        doc.rect(xPos, y + 5, colW, 5, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(day.toUpperCase(), xPos + 6, y + 7);
+
+        let ry = y + 13;
+        meals.forEach(([type, dish]) => {
+          // Badge bg
+          const bc = typeColors[type] || [240, 240, 240];
+          const tc = typeText[type] || [100, 100, 100];
+          doc.setFillColor(...bc);
+          doc.roundedRect(xPos + 4, ry - 3, 18, 5, 1.5, 1.5, 'F');
+          doc.setTextColor(...tc);
+          doc.setFontSize(5.5);
+          doc.setFont('helvetica', 'bold');
+          doc.text(type.toUpperCase(), xPos + 13, ry + 0.5, { align: 'center' });
+
+          doc.setTextColor(61, 43, 31);
+          doc.setFontSize(7.5);
+          doc.setFont('helvetica', 'bold');
+          const nameLines = doc.splitTextToSize(dish.name, colW - 30);
+          doc.text(nameLines, xPos + 25, ry + 0.5);
+
+          if (dish.extras) {
+            const eLine = `+ ${dish.extras}`;
+            doc.setTextColor(107, 124, 92);
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'italic');
+            doc.text(doc.splitTextToSize(eLine, colW - 10), xPos + 6, ry + 6);
+            ry += 12;
+          } else {
+            ry += 10;
+          }
+        });
+
+        if (col === 1 || di === DAYS.length - 1) {
+          const leftH = di % 2 === 0 ? mealH : null;
+          // if last column advance y
+        }
+      });
+
+      // Footer
+      doc.setFillColor(61, 43, 31);
+      doc.rect(0, 287, W, 10, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Menú Semanal — Generado automáticamente', W / 2, 293, { align: 'center' });
+
+      doc.save('menu_semanal.pdf');
+      showToast('✓ PDF descargado');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // Auto-generate on load
+    generateRandom();
+  </script>
+</body>
+
+</html>

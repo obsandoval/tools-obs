@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ofertas de Cerveza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette unified with menu_semanal.html */
+            --cream: #faf6ef;
+            --warm: #f0e8d8;
+            --brown: #3d2b1f;
+            --rust: #c4622d;
+            --sage: #6b7c5c;
+            --gold: #d4a843;
+            --light-sage: #e8eedf;
+            --border: #d6c9b4;
+            --shadow: rgba(61, 43, 31, 0.08);
+            
+            --primary: var(--rust);
+            --primary-hover: #b0561f;
+            --bg-body: var(--cream);
+            --bg-container: #ffffff;
+            --bg-card: var(--cream);
+            --text-main: var(--brown);
+            --text-muted: var(--sage);
+            --border-color: var(--border);
+            --success: var(--sage);
+            --success-bg: rgba(107, 124, 92, 0.08);
+            --success-border: var(--sage);
+            --border-radius: 16px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #2d1e12;
+            --bg-container: #3d2b1f;
+            --bg-card: #2d1e12;
+            --text-main: #f0e8d8;
+            --text-muted: #d6c9b4;
+            --border-color: #523b2b;
+            --success-bg: rgba(107, 124, 92, 0.12);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background-color: var(--bg-container);
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-top: 20px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 900px;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-top: 10px;
+        }
+
+        .back-link {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            color: var(--text-main);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            background-color: var(--bg-card);
+            transform: scale(1.05);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: -10px;
+            right: 0;
+        }
+
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            background-color: var(--bg-card);
+            transform: scale(1.08);
+            border-color: var(--primary);
+        }
+
+        .header-logo-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: inline-block;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(4deg); }
+        }
+
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 28px;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .offers-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (min-width: 768px) {
+            .offers-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .offer-card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            border: 2px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .offer-card.card-winner {
+            border-color: var(--success);
+            box-shadow: 0 0 15px rgba(107, 124, 92, 0.15);
+            background-color: var(--success-bg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        h3 .material-icons-round {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        .winner-badge {
+            display: none;
+            background-color: var(--success);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(107, 124, 92, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(107, 124, 92, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(107, 124, 92, 0); }
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-container);
+            color: var(--text-main);
+            font-size: 15px;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(196, 98, 45, 0.25);
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group input {
+            padding-right: 45px;
+        }
+
+        .input-group .unit-label {
+            position: absolute;
+            right: 15px;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .quick-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag-btn {
+            background-color: var(--bg-container);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .tag-btn:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .actions-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        button.btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 15px rgba(196, 98, 45, 0.2);
+        }
+
+        button.btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(196, 98, 45, 0.3);
+        }
+
+        button.btn-clear {
+            padding: 14px;
+            background-color: transparent;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 500;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        button.btn-clear:hover {
+            background-color: var(--bg-card);
+            border-color: var(--text-muted);
+            color: var(--text-main);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: var(--transition);
+            display: none;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-banner {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .result-banner .material-icons-round {
+            font-size: 24px;
+        }
+
+        .better {
+            background-color: var(--success-bg);
+            border-color: var(--success);
+            color: var(--text-main);
+        }
+
+        .equal {
+            background-color: var(--bg-card);
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 10px;
+            text-align: left;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .comparison-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .highlight-win {
+            font-weight: 700;
+            color: var(--primary) !important;
+        }
+
+        .highlight-lose {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* History section */
+        .history-section {
+            margin-top: 30px;
+            width: 100%;
+            border-top: 1.5px solid var(--border-color);
+            padding-top: 20px;
+            display: none;
+        }
+
+        .history-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .history-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            border-color: var(--primary);
+        }
+
+        .history-btn-del {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .history-btn-del:hover {
+            color: #ef4444;
+        }
+
+        .history-btn-del .material-icons-round {
+            font-size: 16px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .chart-wrapper {
+            margin-top: 25px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-link" aria-label="Volver al inicio">
+                <span class="material-icons-round">arrow_back</span>
+            </a>
+            <div class="theme-toggle">
+                <button id="theme-toggle-btn" class="theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
+                    <span class="material-icons-round" id="theme-toggle-icon">dark_mode</span>
+                </button>
+            </div>
+            <span class="material-icons-round header-logo-icon">sports_bar</span>
+            <h1>Comparando Ofertas</h1>
+            <p class="subtitle">Calcula qué cerveza te da más rendimiento por tu dinero</p>
+        </div>
+
+        <div class="offers-grid">
+            <!-- Oferta 1 -->
+            <div class="offer-card" id="card1">
+                <div class="card-header">
+                    <h3>
+                        <span class="material-icons-round">sports_bar</span>
+                        Oferta 1
+                    </h3>
+                    <span class="winner-badge" id="badge1">Mejor Valor</span>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad1">Cantidad de cervezas</label>
+                    <input type="number" id="cantidad1" placeholder="Ej: 6" min="1" step="1">
+                    <div class="quick-tags">
+                        <button type="button" class="tag-btn" onclick="setQuantity(1, 1)">1 u</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(6, 1)">6 pack</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(12, 1)">12 u</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(24, 1)">24 u</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(36, 1)">36 u</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="mililitros1">Mililitros por cerveza</label>
+                    <div class="input-group">
+                        <input type="number" id="mililitros1" placeholder="Ej: 355" min="1">
+                        <span class="unit-label">ml</span>
+                    </div>
+                    <div class="quick-tags">
+                        <button type="button" class="tag-btn" onclick="setMl(330, 1)">330ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(355, 1)">355ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(473, 1)">473ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(710, 1)">710ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(1000, 1)">1 Litro</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="precio1">Precio total</label>
+                    <div class="input-group">
+                        <input type="number" id="precio1" placeholder="Ej: 150" min="0.01" step="any">
+                        <span class="unit-label">$</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta 2 -->
+            <div class="offer-card" id="card2">
+                <div class="card-header">
+                    <h3>
+                        <span class="material-icons-round">sports_bar</span>
+                        Oferta 2
+                    </h3>
+                    <span class="winner-badge" id="badge2">Mejor Valor</span>
+                </div>
+                <div class="form-group">
+                    <label for="cantidad2">Cantidad de cervezas</label>
+                    <input type="number" id="cantidad2" placeholder="Ej: 12" min="1" step="1">
+                    <div class="quick-tags">
+                        <button type="button" class="tag-btn" onclick="setQuantity(1, 2)">1 u</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(6, 2)">6 pack</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(12, 2)">12 u</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(24, 2)">24 u</button>
+                        <button type="button" class="tag-btn" onclick="setQuantity(36, 2)">36 u</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="mililitros2">Mililitros por cerveza</label>
+                    <div class="input-group">
+                        <input type="number" id="mililitros2" placeholder="Ej: 330" min="1">
+                        <span class="unit-label">ml</span>
+                    </div>
+                    <div class="quick-tags">
+                        <button type="button" class="tag-btn" onclick="setMl(330, 2)">330ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(355, 2)">355ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(473, 2)">473ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(710, 2)">710ml</button>
+                        <button type="button" class="tag-btn" onclick="setMl(1000, 2)">1 Litro</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="precio2">Precio total</label>
+                    <div class="input-group">
+                        <input type="number" id="precio2" placeholder="Ej: 280" min="0.01" step="any">
+                        <span class="unit-label">$</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-row">
+            <button class="btn-primary" onclick="compararOfertas()">
+                <span class="material-icons-round">calculate</span>
+                Calcular Oferta
+            </button>
+            <button class="btn-clear" onclick="clearFields()">Limpiar</button>
+        </div>
+
+        <div class="result" id="resultado"></div>
+
+        <div class="chart-wrapper" id="chartWrapper">
+            <canvas id="graficoComparativo" width="400" height="220"></canvas>
+        </div>
+
+        <!-- History component -->
+        <div class="history-section" id="historySection">
+            <div class="history-title">
+                <span>Historial de comparaciones</span>
+                <button class="tag-btn" onclick="clearHistory()" style="font-size: 10px;">Borrar Historial</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </div>
+
+    <footer>
+        Disfruta con responsabilidad
+    </footer>
+
+    <script>
+        var myChart = null;
+        var lastLitroPrice1 = null;
+        var lastLitroPrice2 = null;
+        var comparisonHistory = [];
+
+        // Set inputs reactively
+        function setQuantity(val, id) {
+            document.getElementById('cantidad' + id).value = val;
+            compararOfertas();
+        }
+
+        function setMl(val, id) {
+            document.getElementById('mililitros' + id).value = val;
+            compararOfertas();
+        }
+
+        // Attach event listeners for real-time calculations
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', compararOfertas);
+        });
+
+        // Initialize state
+        window.addEventListener('DOMContentLoaded', () => {
+            loadInputs();
+            loadHistory();
+        });
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            let newTheme = 'light';
+            let iconText = 'dark_mode';
+            if (currentTheme !== 'dark') {
+                newTheme = 'dark';
+                iconText = 'light_mode';
+            }
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('theme-toggle-icon').innerText = iconText;
+            saveInputs();
+            
+            // Re-render chart to update colors
+            if (myChart && lastLitroPrice1 !== null && lastLitroPrice2 !== null) {
+                renderChart(lastLitroPrice1, lastLitroPrice2);
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('cantidad1').value = '';
+            document.getElementById('mililitros1').value = '';
+            document.getElementById('precio1').value = '';
+            document.getElementById('cantidad2').value = '';
+            document.getElementById('mililitros2').value = '';
+            document.getElementById('precio2').value = '';
+            
+            document.getElementById('resultado').classList.remove('show');
+            document.getElementById('chartWrapper').style.display = 'none';
+            if (myChart) {
+                myChart.destroy();
+                myChart = null;
+            }
+            
+            document.getElementById('badge1').style.display = 'none';
+            document.getElementById('badge2').style.display = 'none';
+            document.getElementById('card1').classList.remove('card-winner');
+            document.getElementById('card2').classList.remove('card-winner');
+            
+            lastLitroPrice1 = null;
+            lastLitroPrice2 = null;
+            
+            saveInputs();
+        }
+
+        function saveInputs() {
+            const inputs = {
+                c1: document.getElementById('cantidad1').value,
+                m1: document.getElementById('mililitros1').value,
+                p1: document.getElementById('precio1').value,
+                c2: document.getElementById('cantidad2').value,
+                m2: document.getElementById('mililitros2').value,
+                p2: document.getElementById('precio2').value,
+                theme: document.documentElement.getAttribute('data-theme') || 'light'
+            };
+            localStorage.setItem('beer_calc_inputs', JSON.stringify(inputs));
+        }
+
+        function loadInputs() {
+            const saved = localStorage.getItem('beer_calc_inputs');
+            if (saved) {
+                const inputs = JSON.parse(saved);
+                document.getElementById('cantidad1').value = inputs.c1 || '';
+                document.getElementById('mililitros1').value = inputs.m1 || '';
+                document.getElementById('precio1').value = inputs.p1 || '';
+                document.getElementById('cantidad2').value = inputs.c2 || '';
+                document.getElementById('mililitros2').value = inputs.m2 || '';
+                document.getElementById('precio2').value = inputs.p2 || '';
+                
+                if (inputs.theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.getElementById('theme-toggle-icon').innerText = 'light_mode';
+                }
+                
+                if (inputs.c1 || inputs.m1 || inputs.p1 || inputs.c2 || inputs.m2 || inputs.p2) {
+                    compararOfertas();
+                }
+            }
+        }
+
+        function compararOfertas() {
+            let c1 = parseFloat(document.getElementById('cantidad1').value);
+            let m1 = parseFloat(document.getElementById('mililitros1').value);
+            let p1 = parseFloat(document.getElementById('precio1').value);
+
+            let c2 = parseFloat(document.getElementById('cantidad2').value);
+            let m2 = parseFloat(document.getElementById('mililitros2').value);
+            let p2 = parseFloat(document.getElementById('precio2').value);
+
+            let resultDiv = document.getElementById('resultado');
+            resultDiv.classList.remove('better', 'equal', 'show');
+            
+            document.getElementById('badge1').style.display = 'none';
+            document.getElementById('badge2').style.display = 'none';
+            document.getElementById('card1').classList.remove('card-winner');
+            document.getElementById('card2').classList.remove('card-winner');
+
+            saveInputs();
+
+            // Quietly return if inputs are empty
+            if ([c1, m1, p1, c2, m2, p2].some(isNaN)) {
+                document.getElementById('chartWrapper').style.display = 'none';
+                return;
+            }
+
+            // Standard sanitization
+            if ([c1, m1, p1, c2, m2, p2].some(val => val <= 0)) {
+                resultDiv.innerHTML = `<div class="result-banner"><span class="material-icons-round">warning</span> Por favor, ingresa valores válidos.</div>`;
+                resultDiv.className = 'result equal show';
+                document.getElementById('chartWrapper').style.display = 'none';
+                return;
+            }
+
+            let totalMl1 = c1 * m1;
+            let totalMl2 = c2 * m2;
+            let totalL1 = totalMl1 / 1000;
+            let totalL2 = totalMl2 / 1000;
+
+            let precioPorLitro1 = (p1 / totalMl1) * 1000;
+            let precioPorLitro2 = (p2 / totalMl2) * 1000;
+
+            let pricePerBeer1 = p1 / c1;
+            let pricePerBeer2 = p2 / c2;
+
+            let costPer100ml1 = (p1 / totalMl1) * 100;
+            let costPer100ml2 = (p2 / totalMl2) * 100;
+
+            let oferta1Mejor = precioPorLitro1 < precioPorLitro2;
+            let oferta2Mejor = precioPorLitro2 < precioPorLitro1;
+            let iguales = Math.abs(precioPorLitro1 - precioPorLitro2) < 0.001;
+
+            let mensaje = '';
+            let clase = '';
+            let iconName = '';
+
+            if (iguales) {
+                mensaje = 'Ambas ofertas ofrecen el mismo valor por tu dinero.';
+                clase = 'equal';
+                iconName = 'compare_arrows';
+            } else if (oferta1Mejor) {
+                mensaje = '¡La Oferta 1 es la mejor opción!';
+                clase = 'better';
+                iconName = 'check_circle';
+                document.getElementById('badge1').style.display = 'inline-block';
+                document.getElementById('card1').classList.add('card-winner');
+            } else {
+                mensaje = '¡La Oferta 2 es la mejor opción!';
+                clase = 'better';
+                iconName = 'check_circle';
+                document.getElementById('badge2').style.display = 'inline-block';
+                document.getElementById('card2').classList.add('card-winner');
+            }
+
+            let diferenciaPorcentaje = Math.abs(((precioPorLitro1 - precioPorLitro2) / Math.max(precioPorLitro1, precioPorLitro2)) * 100);
+
+            let savingsText = iguales ? '' : ` Ahorras un <strong>${diferenciaPorcentaje.toFixed(1)}%</strong>.`;
+
+            let tableHTML = `
+                <div class="result-banner">
+                    <span class="material-icons-round" style="color: ${oferta1Mejor || oferta2Mejor ? 'var(--primary)' : 'var(--text-muted)'}">${iconName}</span>
+                    ${mensaje}
+                </div>
+                <p style="font-size:13px; text-align:center; margin-bottom:12px; color:var(--text-muted)">${savingsText}</p>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Métrica</th>
+                            <th>Oferta 1</th>
+                            <th>Oferta 2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Volumen Total</td>
+                            <td>${totalL1.toFixed(2)} L (${totalMl1} ml)</td>
+                            <td>${totalL2.toFixed(2)} L (${totalMl2} ml)</td>
+                        </tr>
+                        <tr>
+                            <td>Precio por Cerveza</td>
+                            <td>$${pricePerBeer1.toFixed(2)} c/u</td>
+                            <td>$${pricePerBeer2.toFixed(2)} c/u</td>
+                        </tr>
+                        <tr>
+                            <td>Costo por 100ml</td>
+                            <td class="${oferta1Mejor ? 'highlight-win' : 'highlight-lose'}">$${costPer100ml1.toFixed(2)}</td>
+                            <td class="${oferta2Mejor ? 'highlight-win' : 'highlight-lose'}">$${costPer100ml2.toFixed(2)}</td>
+                        </tr>
+                        <tr style="font-weight: 700;">
+                            <td>Precio por Litro</td>
+                            <td class="${oferta1Mejor ? 'highlight-win' : 'highlight-lose'}">$${precioPorLitro1.toFixed(2)}/L</td>
+                            <td class="${oferta2Mejor ? 'highlight-win' : 'highlight-lose'}">$${precioPorLitro2.toFixed(2)}/L</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            resultDiv.innerHTML = tableHTML;
+            resultDiv.className = `result ${clase} show`;
+
+            lastLitroPrice1 = precioPorLitro1;
+            lastLitroPrice2 = precioPorLitro2;
+
+            renderChart(precioPorLitro1, precioPorLitro2);
+            
+            // Add to session history
+            addToHistory(c1, m1, p1, c2, m2, p2, precioPorLitro1, precioPorLitro2);
+        }
+
+        function renderChart(p1, p2) {
+            document.getElementById('chartWrapper').style.display = 'block';
+            let canvas = document.getElementById('graficoComparativo');
+            let ctx = canvas.getContext('2d');
+
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const textColor = isDark ? '#d6c9b4' : '#6b7c5c';
+            const gridColor = isDark ? '#523b2b' : '#d6c9b4';
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Oferta 1', 'Oferta 2'],
+                    datasets: [{
+                        label: 'Precio por litro ($/L)',
+                        data: [p1, p2],
+                        backgroundColor: [
+                            p1 <= p2 ? 'rgba(107, 124, 92, 0.75)' : 'rgba(196, 98, 45, 0.5)',
+                            p2 <= p1 ? 'rgba(107, 124, 92, 0.75)' : 'rgba(196, 98, 45, 0.5)'
+                        ],
+                        borderColor: [
+                            p1 <= p2 ? '#6b7c5c' : '#c4622d',
+                            p2 <= p1 ? '#6b7c5c' : '#c4622d'
+                        ],
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: textColor,
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor,
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Precio por Litro ($/L)',
+                                color: textColor,
+                                font: {
+                                    family: 'Inter',
+                                    size: 12,
+                                    weight: 600
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Comparison History functions
+        function addToHistory(c1, m1, p1, c2, m2, p2, l1, l2) {
+            const dateStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const label1 = `${c1}x${m1}ml ($${p1})`;
+            const label2 = `${c2}x${m2}ml ($${p2})`;
+            const winText = l1 < l2 ? 'Oferta 1 gana' : (l2 < l1 ? 'Oferta 2 gana' : 'Empate');
+            
+            // Check if duplicate of last item
+            if (comparisonHistory.length > 0) {
+                const last = comparisonHistory[0];
+                if (last.label1 === label1 && last.label2 === label2) {
+                    return;
+                }
+            }
+            
+            comparisonHistory.unshift({ date: dateStr, label1, label2, win: winText });
+            if (comparisonHistory.length > 10) {
+                comparisonHistory.pop();
+            }
+            localStorage.setItem('beer_calc_history', JSON.stringify(comparisonHistory));
+            displayHistory();
+        }
+
+        function loadHistory() {
+            const saved = localStorage.getItem('beer_calc_history');
+            if (saved) {
+                comparisonHistory = JSON.parse(saved);
+                displayHistory();
+            }
+        }
+
+        function displayHistory() {
+            const section = document.getElementById('historySection');
+            const list = document.getElementById('historyList');
+            
+            if (comparisonHistory.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            list.innerHTML = '';
+            
+            comparisonHistory.forEach((item, idx) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item';
+                itemDiv.innerHTML = `
+                    <div>
+                        <strong style="color:var(--primary)">${item.date}</strong>: 
+                        ${item.label1} vs ${item.label2} ➔ 
+                        <span style="font-weight:600; color:var(--text-main)">${item.win}</span>
+                    </div>
+                    <button class="history-btn-del" onclick="deleteHistoryItem(${idx})" aria-label="Eliminar entrada">
+                        <span class="material-icons-round">delete</span>
+                    </button>
+                `;
+                list.appendChild(itemDiv);
+            });
+        }
+
+        function deleteHistoryItem(idx) {
+            comparisonHistory.splice(idx, 1);
+            localStorage.setItem('beer_calc_history', JSON.stringify(comparisonHistory));
+            displayHistory();
+        }
+
+        function clearHistory() {
+            comparisonHistory = [];
+            localStorage.removeItem('beer_calc_history');
+            displayHistory();
+        }
+    </script>
+</body>
+
+</html>
