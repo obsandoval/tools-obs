@@ -148,6 +148,18 @@
             .grid {
                 grid-template-columns: 1fr 1fr;
             }
+            .container {
+                max-width: 800px;
+            }
+        }
+
+        @media (min-width: 960px) {
+            .grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .container {
+                max-width: 1100px;
+            }
         }
 
         .card {
@@ -212,6 +224,22 @@
             transform: scale(1.1) rotate(5deg);
         }
 
+        .card-schedule:hover {
+            box-shadow: 0 15px 30px rgba(212, 168, 67, 0.12);
+            border-color: var(--gold);
+        }
+
+        .schedule-icon {
+            background-color: rgba(212, 168, 67, 0.1);
+            color: var(--gold);
+        }
+
+        .card-schedule:hover .schedule-icon {
+            background-color: var(--gold);
+            color: white;
+            transform: scale(1.1) rotate(5deg);
+        }
+
         h2 {
             font-family: 'Inter', sans-serif;
             font-size: 20px;
@@ -254,6 +282,16 @@
 
         .card-beer:hover .btn-beer {
             background-color: var(--rust);
+            color: white;
+        }
+
+        .btn-schedule {
+            background-color: rgba(212, 168, 67, 0.1);
+            color: var(--gold);
+        }
+
+        .card-schedule:hover .btn-schedule {
+            background-color: var(--gold);
             color: white;
         }
 
@@ -301,6 +339,16 @@
                 <h2>Calculadora de Cervezas</h2>
                 <p>Compara ofertas de latas, botellas o paquetes para saber exactamente cuál te da la mayor cantidad de cerveza por cada peso invertido. Incluye gráficos y tags de selección rápida.</p>
                 <span class="card-btn btn-beer">Calcular Oferta</span>
+            </a>
+
+            <!-- Control de Horarios Card -->
+            <a href="Horarios.html" class="card card-schedule">
+                <div class="icon-wrapper schedule-icon">
+                    <span class="material-icons-round">schedule</span>
+                </div>
+                <h2>Control de Horarios</h2>
+                <p>Gestiona y controla los horarios de tus empleados. Organiza turnos, calcula horas acumuladas, visualiza traslapes de horario y exporta el calendario general en formato de imagen o PDF.</p>
+                <span class="card-btn btn-schedule">Entrar a Horarios</span>
             </a>
         </div>
 
