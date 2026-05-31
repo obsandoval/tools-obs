@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Ofertas de Cerveza</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link rel="stylesheet" href="css/beer-calc.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,7 +25,6 @@
             </div>
             <span class="material-icons-round header-logo-icon">sports_bar</span>
             <h1>Comparando Ofertas</h1>
-            <p class="subtitle">Calcula qué cerveza te da más rendimiento por tu dinero</p>
         </div>
 
         <div class="offers-grid">
@@ -139,9 +139,7 @@
         </div>
     </div>
 
-    <footer>
-        Disfruta con responsabilidad
-    </footer>
+
 
     <script>
         var myChart = null;
@@ -182,7 +180,7 @@
             document.documentElement.setAttribute('data-theme', newTheme);
             document.getElementById('theme-toggle-icon').innerText = iconText;
             saveInputs();
-            
+
             // Re-render chart to update colors
             if (myChart && lastLitroPrice1 !== null && lastLitroPrice2 !== null) {
                 renderChart(lastLitroPrice1, lastLitroPrice2);
@@ -196,22 +194,22 @@
             document.getElementById('cantidad2').value = '';
             document.getElementById('mililitros2').value = '';
             document.getElementById('precio2').value = '';
-            
+
             document.getElementById('resultado').classList.remove('show');
             document.getElementById('chartWrapper').style.display = 'none';
             if (myChart) {
                 myChart.destroy();
                 myChart = null;
             }
-            
+
             document.getElementById('badge1').style.display = 'none';
             document.getElementById('badge2').style.display = 'none';
             document.getElementById('card1').classList.remove('card-winner');
             document.getElementById('card2').classList.remove('card-winner');
-            
+
             lastLitroPrice1 = null;
             lastLitroPrice2 = null;
-            
+
             saveInputs();
         }
 
@@ -238,12 +236,12 @@
                 document.getElementById('cantidad2').value = inputs.c2 || '';
                 document.getElementById('mililitros2').value = inputs.m2 || '';
                 document.getElementById('precio2').value = inputs.p2 || '';
-                
+
                 if (inputs.theme === 'dark') {
                     document.documentElement.setAttribute('data-theme', 'dark');
                     document.getElementById('theme-toggle-icon').innerText = 'light_mode';
                 }
-                
+
                 if (inputs.c1 || inputs.m1 || inputs.p1 || inputs.c2 || inputs.m2 || inputs.p2) {
                     compararOfertas();
                 }
@@ -261,7 +259,7 @@
 
             let resultDiv = document.getElementById('resultado');
             resultDiv.classList.remove('better', 'equal', 'show');
-            
+
             document.getElementById('badge1').style.display = 'none';
             document.getElementById('badge2').style.display = 'none';
             document.getElementById('card1').classList.remove('card-winner');
@@ -373,7 +371,7 @@
             lastLitroPrice2 = precioPorLitro2;
 
             renderChart(precioPorLitro1, precioPorLitro2);
-            
+
             // Add to session history
             addToHistory(c1, m1, p1, c2, m2, p2, precioPorLitro1, precioPorLitro2);
         }
@@ -465,7 +463,7 @@
             const label1 = `${c1}x${m1}ml ($${p1})`;
             const label2 = `${c2}x${m2}ml ($${p2})`;
             const winText = l1 < l2 ? 'Oferta 1 gana' : (l2 < l1 ? 'Oferta 2 gana' : 'Empate');
-            
+
             // Check if duplicate of last item
             if (comparisonHistory.length > 0) {
                 const last = comparisonHistory[0];
@@ -473,7 +471,7 @@
                     return;
                 }
             }
-            
+
             comparisonHistory.unshift({ date: dateStr, label1, label2, win: winText });
             if (comparisonHistory.length > 10) {
                 comparisonHistory.pop();
@@ -493,15 +491,15 @@
         function displayHistory() {
             const section = document.getElementById('historySection');
             const list = document.getElementById('historyList');
-            
+
             if (comparisonHistory.length === 0) {
                 section.style.display = 'none';
                 return;
             }
-            
+
             section.style.display = 'block';
             list.innerHTML = '';
-            
+
             comparisonHistory.forEach((item, idx) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'history-item';

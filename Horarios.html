@@ -14,6 +14,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="css/horarios.css">
+  <script>
+    if (localStorage.getItem('index_theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
 </head>
 
 <body>
@@ -33,12 +38,26 @@
       <span class="date-separator">al</span>
       <input type="date" id="end-date" class="date-input" />
     </div>
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tab-schedules">
-        <span class="material-symbols-outlined">calendar_view_week</span> Horarios
+    <div class="tab-bar-group" style="display: flex; align-items: center; gap: 12px;">
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-schedules">
+          <span class="material-symbols-outlined">calendar_view_week</span> Horarios
+        </button>
+        <button class="tab-btn" id="tab-compare">
+          <span class="material-symbols-outlined">compare_arrows</span> Comparar
+        </button>
+      </div>
+      <button class="btn-export" id="btn-export-img"
+        style="background: var(--surface-2); color: var(--text); border: 1.5px solid var(--border);">
+        <span class="material-symbols-outlined">image</span>
+        Imagen
       </button>
-      <button class="tab-btn" id="tab-compare">
-        <span class="material-symbols-outlined">compare_arrows</span> Comparar
+      <button class="btn-export" id="btn-export-pdf">
+        <span class="material-symbols-outlined">picture_as_pdf</span>
+        PDF
+      </button>
+      <button id="theme-toggle-btn" class="theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
+        <span class="material-symbols-outlined" id="theme-toggle-icon">dark_mode</span>
       </button>
     </div>
   </header>
@@ -63,17 +82,7 @@
     <div class="compare-grid" id="compare-grid"></div>
   </div>
 
-  <div class="actions-bar">
-    <button class="btn-export" id="btn-export-img"
-      style="background: var(--surface-2); color: var(--text); border: 1.5px solid var(--border); box-shadow: none;">
-      <span class="material-symbols-outlined">image</span>
-      Exportar imagen
-    </button>
-    <button class="btn-export" id="btn-export-pdf">
-      <span class="material-symbols-outlined">picture_as_pdf</span>
-      Exportar PDF (Páginas)
-    </button>
-  </div>
+
 
   <!-- MODAL -->
   <div class="modal-bg" id="modal-bg">
@@ -132,6 +141,27 @@
   </div>
 
   <script>
+    // Configuración de tema (modo oscuro)
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('index_theme');
+      if (savedTheme === 'dark') {
+        document.getElementById('theme-toggle-icon').textContent = 'light_mode';
+      }
+    });
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      let newTheme = 'light';
+      let iconText = 'dark_mode';
+      if (currentTheme !== 'dark') {
+        newTheme = 'dark';
+        iconText = 'light_mode';
+      }
+      document.documentElement.setAttribute('data-theme', newTheme);
+      document.getElementById('theme-toggle-icon').textContent = iconText;
+      localStorage.setItem('index_theme', newTheme);
+    }
+
     (function () {
       'use strict';
 
