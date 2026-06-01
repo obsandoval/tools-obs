@@ -397,5 +397,47 @@
     "difficulty": "Media",
     "ingredients": "Pan de masa madre, frijol y queso",
     "extras": "Ketchup y mayonesa"
+  },
+  {
+    "name": "Papa con garbanzo y tofu",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Papa, garbanzo, tofu",
+    "extras": "Aguacate"
+  },
+  {
+    "name": "Coliflor con salsa de tomate",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Coliflor, salsa de tomate",
+    "extras": "Arroz"
+  },
+  {
+    "name": "Croissant con lechuga, frijoles y aguacate",
+    "type": "Almuerzo",
+    "difficulty": "Media",
+    "ingredients": "Croissant, lechuga, frijoles, aguacate",
+    "extras": "Queso cheddar"
+  },
+  {
+    "name": "Pupusas de frijol con queso",
+    "type": "Almuerzo",
+    "difficulty": "Alta",
+    "ingredients": "Harina de maíz, frijoles, quesillo",
+    "extras": "Curtido y salsa"
+  },
+  {
+    "name": "Pan con ajo",
+    "type": "Almuerzo",
+    "difficulty": "Baja",
+    "ingredients": "Pan, ajo, mantequilla",
+    "extras": "Quesillo"
+  },
+  {
+    "name": "Nacho con frijoles, queso y jalapeño",
+    "type": "Desayuno",
+    "difficulty": "Media",
+    "ingredients": "Nachos, frijoles, queso, jalapeño",
+    "extras": "Crema"
   }
 ]
