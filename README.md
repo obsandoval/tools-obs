@@ -1,37 +1,56 @@
-# Calculadora de Precio de Cerveza
+# ToolsObs
 
-¡Bienvenido a la Calculadora de Precio de Cerveza! Esta herramienta te permite calcular fácilmente el costo por litro de cerveza, ya sea que estés utilizando mililitros o onzas, con una simple opción de conversión.
+Panel de herramientas personales con diseño dark y glass morphism.
 
-## Descripción
+## Herramientas
 
-Este proyecto es una calculadora web que ayuda a determinar el costo por litro de cerveza, basada en el precio total y la cantidad especificada. La calculadora ofrece la opción de ingresar la cantidad en mililitros o, si se prefiere, en onzas. Al seleccionar la opción de onzas, los valores se convierten automáticamente a mililitros para realizar el cálculo correcto.
+### 01 — Menú Semanal
+Planificador de comidas para la semana. Genera menús aleatorios a partir de un catálogo de platillos (`platillos.json`) y permite editar cada comida manualmente. Exporta a PDF o copia el menú como texto plano.
 
-## Características
+### 02 — Calculadora de Cervezas
+Compara dos ofertas de cerveza y determina cuál tiene mejor precio por litro. Muestra una tabla comparativa con volumen total, precio por unidad, costo por 100 ml y precio por litro. Incluye gráfico de barras e historial de comparaciones.
 
-- **Interfaz simple y moderna**: Diseñada con una interfaz amigable y fácil de usar.
-- **Conversión de unidades**: Incluye un checkbox que permite convertir onzas a mililitros de forma automática.
-- **Resultados precisos**: Calcula el precio por litro y muestra la cantidad total en litros.
+### 03 — Radio YSUCA 91.7 FM
+Reproductor de radio en vivo con diseño vintage. Conecta al stream de YSUCA (Citrus3). Incluye visualizador de barras, indicador de sintonía (magic eye), perilla de encendido y control de volumen.
 
-## Cómo usar la Calculadora
+## Stack
 
-1. Ingresa la cantidad de mililitros o onzas.
-2. Introduce el número de cervezas que deseas calcular.
-3. Especifica el precio total en dólares.
-4. Si estás usando onzas, marca el checkbox "Convertir de onzas a mililitros".
-5. Haz clic en "Calcular el costo por litro" para obtener los resultados.
+- HTML5 + CSS3 vanilla + JavaScript vanilla
+- [Chart.js](https://www.chartjs.org/) — gráfico de barras en la calculadora
+- [jsPDF](https://github.com/parallax/jsPDF) — exportación PDF del menú
+- [Google Fonts](https://fonts.google.com/) — Inter, Special Elite, VT323
+- [Material Icons Round](https://fonts.google.com/icons) — iconografía
 
-## Ejemplo de Conversión
+## Estructura
 
-Si ingresas el volumen en onzas, asegúrate de marcar la opción de conversión. La calculadora convertirá automáticamente las onzas a mililitros antes de realizar el cálculo.
+```
+tools-obs-main/
+├── index.html           # Panel principal (bento grid)
+├── menu_semanal.html    # Planificador de comidas
+├── beer-calc.html       # Calculadora de cervezas
+├── radio.html           # Reproductor YSUCA 91.7 FM
+├── platillos.json       # Catálogo de platillos
+└── css/
+    ├── index.css
+    ├── menu_semanal.css
+    ├── beer-calc.css
+    └── radio.css
+```
 
-## Tecnologías utilizadas
+## Uso local
 
-- **HTML5**
-- **CSS3**
-- **JavaScript**
+Requiere un servidor web local para que `menu_semanal.html` pueda cargar `platillos.json` (los navegadores bloquean `fetch()` con el protocolo `file://`).
 
-## Instalación
+```bash
+# Python
+python3 -m http.server 8080
 
-1. Clona este repositorio en tu máquina local:
-   ```bash
-   git clone https://github.com/tu-usuario/calculadora-cerveza.git
+# Node (npx)
+npx serve .
+```
+
+Luego abre `http://localhost:8080` en el navegador.
+
+---
+
+Hecho por Ob Sandoval

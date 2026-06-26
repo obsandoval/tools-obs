@@ -1,0 +1,528 @@
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=VT323&display=swap');
+
+:root {
+    --wood-dark:  #3b1f0e;
+    --wood-mid:   #6b3a1f;
+    --wood-light: #9c5a2e;
+    --cream:      #f5e9cc;
+    --amber:      #d4820a;
+    --amber-glow: #ffb347;
+    --dial-bg:    #1a1008;
+    --dial-scale: #e8d5a3;
+    --green-eye:  #39ff14;
+    --warm-shadow: rgba(59, 31, 14, 0.6);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Special Elite', serif;
+    min-height: 100vh;
+    background-color: #06030f;
+    background-image:
+        radial-gradient(ellipse 80% 60% at 20% 10%,  rgba(99,58,180,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 80%,  rgba(30,100,200,0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 60% 40%,  rgba(180,40,100,0.08) 0%, transparent 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.cabinet { position: relative; z-index: 1; }
+
+/* ── Radio cabinet ───────────────────────────────────────── */
+.cabinet {
+    width: 100%;
+    max-width: 520px;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 3px,
+            rgba(0,0,0,0.07) 3px,
+            rgba(0,0,0,0.07) 4px
+        ),
+        linear-gradient(160deg, #8b4513 0%, #5c2d0a 35%, #3b1a07 65%, #6b3515 100%);
+    border-radius: 18px 18px 12px 12px;
+    padding: 28px 28px 24px;
+    box-shadow:
+        0 0 0 3px #2a0f04,
+        0 0 0 6px #7a3b10,
+        0 0 0 8px #2a0f04,
+        0 8px 40px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(255,200,120,0.25),
+        inset 0 -2px 0 rgba(0,0,0,0.4);
+    position: relative;
+}
+
+/* Wood grain highlight strip */
+.cabinet::before {
+    content: '';
+    position: absolute;
+    top: 10px; left: 14px; right: 14px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,190,90,0.35), transparent);
+    pointer-events: none;
+}
+
+/* ── Top label ───────────────────────────────────────────── */
+.brand-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.brand-name {
+    font-family: 'Special Elite', serif;
+    font-size: 22px;
+    color: var(--cream);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.model-tag {
+    font-family: 'Special Elite', serif;
+    font-size: 10px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    opacity: 0.8;
+}
+
+/* back button */
+.back-btn {
+    background: none;
+    border: 1px solid rgba(212,130,10,0.4);
+    color: var(--amber);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 18px;
+}
+.back-btn:hover { background: rgba(212,130,10,0.15); border-color: var(--amber); }
+
+/* ── Dial / scale area ───────────────────────────────────── */
+.dial-section {
+    background: var(--dial-bg);
+    border-radius: 10px;
+    padding: 14px 18px 10px;
+    margin-bottom: 18px;
+    box-shadow:
+        inset 0 2px 8px rgba(0,0,0,0.8),
+        inset 0 0 1px rgba(255,160,40,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* amber backlight */
+.dial-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, rgba(180,90,0,0.18) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* frequency scale */
+.freq-scale {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4px;
+    margin-bottom: 6px;
+}
+.freq-scale span {
+    font-family: 'Special Elite', serif;
+    font-size: 9px;
+    color: var(--dial-scale);
+    opacity: 0.7;
+}
+
+/* tuning band */
+.tuning-band {
+    height: 28px;
+    background: linear-gradient(90deg, #120a02, #1e1004, #120a02);
+    border-radius: 4px;
+    border: 1px solid rgba(255,160,40,0.1);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+/* tick marks */
+.tuning-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 18px,
+        rgba(212,130,10,0.25) 18px,
+        rgba(212,130,10,0.25) 19px
+    );
+}
+
+/* needle */
+.needle {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--amber-glow), var(--amber));
+    box-shadow: 0 0 6px var(--amber-glow);
+    left: 58%;
+    transition: left 0.4s ease;
+}
+.needle::after {
+    content: '';
+    position: absolute;
+    top: -4px; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: var(--amber-glow);
+}
+
+/* station readout */
+.station-readout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.freq-display {
+    font-family: 'VT323', monospace;
+    font-size: 36px;
+    color: var(--amber-glow);
+    text-shadow: 0 0 12px var(--amber-glow), 0 0 4px rgba(255,179,71,0.6);
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.station-title {
+    font-family: 'Special Elite', serif;
+    font-size: 11px;
+    color: var(--dial-scale);
+    letter-spacing: 1px;
+    opacity: 0.8;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* ── Middle row: speaker + controls ─────────────────────── */
+.middle-row {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+    margin-bottom: 18px;
+}
+
+/* Speaker grille */
+.speaker {
+    flex: 1;
+    background: #1a0c04;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow:
+        inset 0 2px 6px rgba(0,0,0,0.7),
+        inset 0 0 0 1px rgba(255,160,40,0.08);
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 5px;
+    align-content: center;
+}
+
+.speaker-dot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #3a2010, #120800);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.8);
+}
+
+/* fabric strip above dots */
+.speaker-cloth {
+    grid-column: 1/-1;
+    height: 4px;
+    background: repeating-linear-gradient(
+        0deg,
+        #2a1008,
+        #2a1008 1px,
+        #1a0804 1px,
+        #1a0804 2px
+    );
+    border-radius: 2px;
+    margin-bottom: 2px;
+}
+
+/* Controls panel */
+.controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    justify-content: center;
+    align-items: center;
+    min-width: 120px;
+}
+
+/* Magic eye (VU indicator) */
+.magic-eye {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #001a00 30%, #002800 60%, #001000 100%);
+    border: 2px solid #2a1a06;
+    box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.9),
+        0 0 0 3px #150b02;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eye-glow {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from -30deg,
+        transparent 0deg,
+        rgba(57,255,20,0) 40deg,
+        rgba(57,255,20,0.8) 60deg,
+        rgba(57,255,20,0.8) 180deg,
+        rgba(57,255,20,0) 200deg,
+        transparent 240deg
+    );
+    opacity: 0.15;
+    transition: opacity 0.4s, filter 0.4s;
+    filter: blur(1px);
+}
+
+.magic-eye.active .eye-glow {
+    opacity: 1;
+    animation: eye-sweep 2s ease-in-out infinite alternate;
+    filter: blur(0);
+    box-shadow: 0 0 10px var(--green-eye), 0 0 20px rgba(57,255,20,0.4);
+}
+
+@keyframes eye-sweep {
+    from { transform: rotate(-18deg); opacity: 0.7; }
+    to   { transform: rotate(18deg);  opacity: 1; }
+}
+
+.eye-label {
+    position: absolute;
+    bottom: -18px;
+    font-family: 'Special Elite', serif;
+    font-size: 8px;
+    color: var(--dial-scale);
+    letter-spacing: 1px;
+    opacity: 0.6;
+    white-space: nowrap;
+}
+
+/* Power knob */
+.knob-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.knob {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #6b3a1f, #2a0f04 70%);
+    border: 3px solid #1a0802;
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.7),
+        inset 0 1px 0 rgba(255,160,60,0.2),
+        0 0 0 2px #3d1a08;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s, box-shadow 0.25s;
+    user-select: none;
+}
+
+/* knob indicator line */
+.knob::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%; transform: translateX(-50%);
+    width: 2px; height: 10px;
+    background: var(--cream);
+    border-radius: 1px;
+    transition: transform 0.4s;
+}
+
+.knob.on { transform: rotate(135deg); }
+.knob.on::after { background: var(--amber-glow); box-shadow: 0 0 4px var(--amber-glow); }
+
+.knob:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,160,60,0.3), 0 0 0 2px var(--amber), 0 0 12px rgba(212,130,10,0.3); }
+
+.knob-label {
+    font-family: 'Special Elite', serif;
+    font-size: 9px;
+    color: var(--dial-scale);
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
+
+/* ── Volume row ──────────────────────────────────────────── */
+.bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    border: 1px solid rgba(255,160,40,0.08);
+}
+
+.vol-label {
+    font-family: 'Special Elite', serif;
+    font-size: 10px;
+    color: var(--dial-scale);
+    letter-spacing: 2px;
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--amber) var(--fill, 80%), rgba(255,160,40,0.15) var(--fill, 80%));
+    outline: none;
+    cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #c8a060, #7a4a18);
+    border: 2px solid #2a1008;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #c8a060, #7a4a18);
+    border: 2px solid #2a1008;
+    cursor: pointer;
+}
+
+.vol-pct {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--amber);
+    min-width: 38px;
+    text-align: right;
+}
+
+/* ── Status ──────────────────────────────────────────────── */
+.status-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.status-lamp {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #2a1a06;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+.status-lamp.connecting { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation: blink 0.8s infinite; }
+.status-lamp.playing    { background: var(--green-eye); box-shadow: 0 0 8px var(--green-eye); }
+.status-lamp.error      { background: #e53935; box-shadow: 0 0 6px #e53935; }
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.status-text {
+    font-family: 'Special Elite', serif;
+    font-size: 11px;
+    color: var(--dial-scale);
+    letter-spacing: 1px;
+    opacity: 0.75;
+}
+
+/* ── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    body { padding: 12px; align-items: flex-start; padding-top: 20px; }
+
+    .cabinet { padding: 20px 16px 18px; }
+
+    .back-btn {
+        width: 44px; height: 44px;
+        font-size: 20px;
+    }
+
+    .brand-name { font-size: 18px; letter-spacing: 4px; }
+    .model-tag  { font-size: 9px; }
+
+    .dial-section { padding: 12px 12px 8px; }
+
+    .freq-display { font-size: 30px; }
+
+    .middle-row { gap: 12px; }
+
+    .speaker {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        padding: 8px;
+    }
+
+    .controls-panel { min-width: 100px; gap: 10px; }
+
+    .magic-eye { width: 44px; height: 44px; }
+    .eye-glow  { width: 28px; height: 28px; }
+
+    .knob { width: 50px; height: 50px; }
+
+    .bottom-row { padding: 10px; gap: 10px; }
+
+    input[type="range"]::-webkit-slider-thumb { width: 22px; height: 22px; }
+    input[type="range"]::-moz-range-thumb     { width: 20px; height: 20px; }
+}
+
+@media (max-width: 360px) {
+    .cabinet { padding: 16px 12px 14px; }
+
+    .brand-name { font-size: 16px; letter-spacing: 3px; }
+
+    .speaker { grid-template-columns: repeat(6, 1fr); }
+
+    .controls-panel { min-width: 88px; }
+
+    .magic-eye { width: 38px; height: 38px; }
+    .eye-glow  { width: 24px; height: 24px; }
+
+    .knob { width: 44px; height: 44px; }
+    .knob::after { top: 6px; height: 8px; }
+}

@@ -1,82 +1,76 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <title>ToolsObs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="theme-toggle">
-                <button id="theme-toggle-btn" class="theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
-                    <span class="material-icons-round" id="theme-toggle-icon">dark_mode</span>
-                </button>
-            </div>
-            <span class="material-icons-round header-logo-icon">dashboard</span>
-            <h1>ToolsObs</h1>
-        </div>
 
-        <div class="grid">
-            <!-- Menú Semanal Card -->
-            <a href="menu_semanal.html" class="card card-menu">
-                <div class="icon-wrapper menu-icon">
+<div class="wrapper">
+
+    <header>
+        <div class="logo-group">
+            <span class="logo-eyebrow">Panel de control</span>
+            <span class="logo-name">ToolsObs</span>
+        </div>
+        <div class="header-meta">
+            3 herramientas<br>disponibles
+        </div>
+    </header>
+
+    <div class="bento">
+
+        <!-- Menú Semanal -->
+        <a href="menu_semanal.html" class="card card-menu">
+            <div class="card-top">
+                <span class="card-num">01</span>
+                <div class="badge">
                     <span class="material-icons-round">calendar_today</span>
                 </div>
-                <h2>Menú Semanal</h2>
-            </a>
+            </div>
+            <div class="card-bottom">
+                <span class="card-title">Menú Semanal</span>
+                <span class="card-sub">Planificación de comidas</span>
+            </div>
+        </a>
 
-            <!-- Calculadora de Cerveza Card -->
-            <a href="beer-calc.html" class="card card-beer">
-                <div class="icon-wrapper beer-icon">
+        <!-- Calculadora de Cervezas -->
+        <a href="beer-calc.html" class="card card-beer">
+            <div class="card-top">
+                <span class="card-num">02</span>
+                <div class="badge">
                     <span class="material-icons-round">sports_bar</span>
                 </div>
-                <h2>Calculadora de Cervezas</h2>
-            </a>
+            </div>
+            <div class="card-bottom">
+                <span class="card-title">Calculadora<br>de Cervezas</span>
+                <span class="card-sub">Costos y cantidades</span>
+            </div>
+        </a>
 
-            <!-- Control de Horarios Card -->
-            <a href="Horarios.html" class="card card-schedule">
-                <div class="icon-wrapper schedule-icon">
-                    <span class="material-icons-round">schedule</span>
+        <!-- Radio YSUCA -->
+        <a href="radio.html" class="card card-radio">
+            <div class="card-top">
+                <span class="card-num">03</span>
+                <div class="badge">
+                    <span class="material-icons-round">radio</span>
                 </div>
-                <h2>Control de Horarios</h2>
-            </a>
-        </div>
+            </div>
+            <div class="card-bottom">
+                <span class="card-title">Radio YSUCA<br>91.7 FM</span>
+                <span class="live-dot">EN VIVO</span>
+            </div>
+        </a>
 
-        <footer>
-            Hecho por Ob Sandoval
-        </footer>
     </div>
 
-    <script>
-        // Load theme preference on load
-        window.addEventListener('DOMContentLoaded', () => {
-            const saved = localStorage.getItem('index_theme');
-            if (saved === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('theme-toggle-icon').innerText = 'light_mode';
-            }
-        });
+    <footer>Hecho por Ob Sandoval</footer>
 
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            let newTheme = 'light';
-            let iconText = 'dark_mode';
-            if (currentTheme !== 'dark') {
-                newTheme = 'dark';
-                iconText = 'light_mode';
-            }
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.getElementById('theme-toggle-icon').innerText = iconText;
-            localStorage.setItem('index_theme', newTheme);
-        }
-    </script>
+</div>
+
 </body>
-
 </html>

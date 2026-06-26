@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YSUCA 91.7 FM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="css/radio.css">
+</head>
+<body>
+
+<div class="cabinet">
+
+    <!-- Brand strip -->
+    <div class="brand-strip">
+        <a href="index.html" class="back-btn" aria-label="Volver">&#8592;</a>
+        <span class="brand-name">ToolsObs</span>
+        <span class="model-tag">MODEL R-917</span>
+    </div>
+
+    <!-- Dial / frequency scale -->
+    <div class="dial-section">
+        <div class="freq-scale">
+            <span>88</span><span>90</span><span>92</span><span>94</span>
+            <span>96</span><span>98</span><span>100</span>
+        </div>
+        <div class="tuning-band">
+            <div class="needle" id="needle"></div>
+        </div>
+        <div class="station-readout">
+            <div>
+                <div class="freq-display">91.7</div>
+            </div>
+            <div class="station-title">YSUCA FM<br>San Salvador</div>
+        </div>
+    </div>
+
+    <!-- Speaker + controls -->
+    <div class="middle-row">
+
+        <!-- Speaker grille -->
+        <div class="speaker" id="speaker-grid"></div>
+
+        <!-- Controls -->
+        <div class="controls-panel">
+
+            <!-- Magic eye tube -->
+            <div style="position:relative; margin-bottom:8px;">
+                <div class="magic-eye" id="magic-eye">
+                    <div class="eye-glow" id="eye-glow"></div>
+                </div>
+                <span class="eye-label">SINTONÍA</span>
+            </div>
+
+            <!-- Power knob -->
+            <div class="knob-wrap">
+                <div class="knob" id="power-knob" onclick="togglePlay()" role="button" aria-label="Encender/Apagar"></div>
+                <span class="knob-label">POWER</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Volume -->
+    <div class="bottom-row">
+        <span class="vol-label">VOL</span>
+        <input type="range" id="vol-slider" min="0" max="100" value="80"
+               oninput="setVolume(this.value)" aria-label="Volumen">
+        <span class="vol-pct" id="vol-pct">80%</span>
+    </div>
+
+    <!-- Status -->
+    <div class="status-strip">
+        <div class="status-lamp" id="status-lamp"></div>
+        <span class="status-text" id="status-text">EN REPOSO</span>
+    </div>
+
+</div>
+
+<audio id="radio" preload="none"></audio>
+
+<script>
+    const STREAM = 'https://fast.citrus3.com:8314/stream';
+
+    const audio   = document.getElementById('radio');
+    const knob    = document.getElementById('power-knob');
+    const eye     = document.getElementById('magic-eye');
+    const lamp    = document.getElementById('status-lamp');
+    const txt     = document.getElementById('status-text');
+    const needle  = document.getElementById('needle');
+    const volSldr = document.getElementById('vol-slider');
+    const volPct  = document.getElementById('vol-pct');
+    let playing   = false;
+
+    audio.volume  = 0.8;
+
+    // Build speaker dots
+    const grid = document.getElementById('speaker-grid');
+    const cloth = document.createElement('div');
+    cloth.className = 'speaker-cloth';
+    grid.appendChild(cloth);
+    for (let i = 0; i < 63; i++) {
+        const d = document.createElement('div');
+        d.className = 'speaker-dot';
+        grid.appendChild(d);
+    }
+
+    function setStatus(state, text) {
+        lamp.className = 'status-lamp' + (state ? ' ' + state : '');
+        txt.textContent = text;
+    }
+
+    function setActive(on) {
+        if (on) {
+            eye.classList.add('active');
+            knob.classList.add('on');
+            needle.style.left = '58%';
+        } else {
+            eye.classList.remove('active');
+            knob.classList.remove('on');
+            needle.style.left = '20%';
+        }
+    }
+
+    function togglePlay() {
+        if (playing) { stop(); } else { start(); }
+    }
+
+    function start() {
+        audio.src = STREAM;
+        audio.load();
+        audio.play().catch(() => {
+            setStatus('error', 'SIN SEÑAL');
+            setActive(false);
+            playing = false;
+        });
+        playing = true;
+        setActive(true);
+        setStatus('connecting', 'SINTONIZANDO...');
+    }
+
+    function stop() {
+        audio.pause();
+        audio.src = '';
+        playing = false;
+        setActive(false);
+        setStatus('', 'EN REPOSO');
+    }
+
+    function setVolume(val) {
+        audio.volume = val / 100;
+        volPct.textContent = val + '%';
+        volSldr.style.setProperty('--fill', val + '%');
+    }
+
+    // init slider fill
+    volSldr.style.setProperty('--fill', '80%');
+
+    audio.addEventListener('playing',  () => setStatus('playing', 'EN VIVO — 91.7 FM'));
+    audio.addEventListener('waiting',  () => setStatus('connecting', 'CARGANDO...'));
+    audio.addEventListener('stalled',  () => setStatus('connecting', 'RECONECTANDO...'));
+    audio.addEventListener('error',    () => {
+        setStatus('error', 'SIN SEÑAL');
+        setActive(false);
+        playing = false;
+    });
+</script>
+</body>
+</html>
