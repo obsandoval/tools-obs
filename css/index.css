@@ -207,6 +207,14 @@ header {
 }
 .card-radio:hover { border-color: rgba(196,181,253,0.25); box-shadow: 0 20px 60px rgba(196,181,253,0.07); }
 
+.card-habitos {
+    --accent: #a855f7;
+    --badge-bg: rgba(168,85,247,0.1);
+    --badge-shadow: rgba(168,85,247,0.2);
+    --card-glow: radial-gradient(ellipse 80% 80% at 10% 90%, rgba(168,85,247,0.07) 0%, transparent 60%);
+}
+.card-habitos:hover { border-color: rgba(168,85,247,0.25); box-shadow: 0 20px 60px rgba(168,85,247,0.07); }
+
 /* ── Live dot (radio) ────────────────────────────────────── */
 .live-dot {
     display: flex;

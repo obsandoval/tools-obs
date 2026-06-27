@@ -4,14 +4,17 @@ Panel de herramientas personales con diseño dark y glass morphism.
 
 ## Herramientas
 
-### 01 — Menú Semanal
+### 01 — Menú Semanal 🍽️
 Planificador de comidas para la semana. Genera menús aleatorios a partir de un catálogo de platillos (`platillos.json`) y permite editar cada comida manualmente. Exporta a PDF o copia el menú como texto plano.
 
-### 02 — Calculadora de Cervezas
+### 02 — Calculadora de Cervezas 🍺
 Compara dos ofertas de cerveza y determina cuál tiene mejor precio por litro. Muestra una tabla comparativa con volumen total, precio por unidad, costo por 100 ml y precio por litro. Incluye gráfico de barras e historial de comparaciones.
 
-### 03 — Radio YSUCA 91.7 FM
+### 03 — Radio YSUCA 91.7 FM 📻
 Reproductor de radio en vivo con diseño vintage. Conecta al stream de YSUCA (Citrus3). Incluye visualizador de barras, indicador de sintonía (magic eye), perilla de encendido y control de volumen.
+
+### 04 — HabitKit ✅
+Seguimiento de hábitos diarios inspirado en HabitKit. Guarda el progreso en `localStorage`. Incluye tres vistas (mosaico, lista, detalle), creación de hábitos con icono y color personalizados, heatmap de actividad por semanas, estadísticas de racha y tasa de cumplimiento.
 
 ## Stack
 
@@ -29,6 +32,7 @@ tools-obs-main/
 ├── menu_semanal.html    # Planificador de comidas
 ├── beer-calc.html       # Calculadora de cervezas
 ├── radio.html           # Reproductor YSUCA 91.7 FM
+├── habitos.html         # Seguimiento de hábitos
 ├── platillos.json       # Catálogo de platillos
 └── css/
     ├── index.css
