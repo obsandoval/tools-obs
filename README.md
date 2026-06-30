@@ -55,6 +55,10 @@ npx serve .
 
 Luego abre `http://localhost:8080` en el navegador.
 
+## Pendientes
+
+- [ ] **HabitKit — Backup semanal a Google Drive**: guardar automáticamente los hábitos (`localStorage`) en un archivo JSON en Google Drive cada 7 días. Dos opciones evaluadas: (A) Google Drive API con OAuth2 (automático, requiere proyecto en Google Cloud); (B) botón de exportación + recordatorio semanal (manual, sin configuración).
+
 ---
 
 Hecho por Ob Sandoval
