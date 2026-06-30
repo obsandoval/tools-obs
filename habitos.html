@@ -116,14 +116,36 @@
       background: rgba(255,255,255,.07); color: var(--text2); cursor: pointer;
       display: flex; align-items: center; justify-content: center; }
     .detail-edit-btn .material-icons-round { font-size: 17px; }
-    .heatmap { display: flex; flex-direction: column; gap: 2px; overflow-x: hidden; }
-    .heatmap-row { display: flex; gap: 2px; }
+    .heatmap { display: flex; flex-direction: column; gap: 1.5px; overflow-x: hidden; }
+    .heatmap-row { display: flex; gap: 1.5px; }
     .hm-dot { aspect-ratio: 1; border-radius: 50%; flex: 1; min-width: 0; }
     .stats-row { display: flex; gap: 6px; margin-top: 9px; }
     .stat-pill { background: rgba(255,255,255,.05); border-radius: 10px; padding: 7px 6px;
       flex: 1; text-align: center; }
     .stat-val { font-size: 13px; font-weight: 700; }
     .stat-lbl { font-size: 9px; color: var(--text3); margin-top: 2px; }
+
+    /* ── GOAL ── */
+    .goal-bar-wrap { height: 4px; background: rgba(255,255,255,.1); border-radius: 2px;
+      overflow: hidden; margin: 8px 0 4px; }
+    .goal-bar-fill { height: 100%; border-radius: 2px; transition: width .4s ease; }
+    .goal-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px;
+      color: rgba(255,255,255,.5); margin-top: 2px; }
+    .goal-badge .material-icons-round { font-size: 11px; }
+    .goal-type-row { display: flex; gap: 6px; }
+    .goal-type-btn { flex: 1; padding: 9px 4px; border-radius: 10px;
+      border: 1.5px solid var(--bg3); background: var(--bg3); color: var(--text2);
+      font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .goal-type-btn.active { border-color: var(--purple); color: var(--purple);
+      background: rgba(168,85,247,.12); }
+    .goal-times-row { display: flex; align-items: center; gap: 10px; margin-top: 10px;
+      background: var(--bg3); border-radius: 12px; padding: 10px 14px; }
+    .goal-cnt-btn { width: 30px; height: 30px; border-radius: 8px; border: none;
+      background: var(--bg2); color: var(--text); font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-family: inherit;
+      line-height: 1; }
+    #goalTimesVal { font-size: 20px; font-weight: 700; min-width: 28px; text-align: center; }
+    .goal-times-label { font-size: 12px; color: var(--text2); flex: 1; }
 
     /* ── MODAL ── */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72);
@@ -254,6 +276,18 @@
     <div class="icon-grid" id="iconGrid"></div>
     <div class="modal-label">Color</div>
     <div class="color-grid" id="colorGrid"></div>
+    <div class="modal-label">Meta</div>
+    <div class="goal-type-row">
+      <button class="goal-type-btn active" data-t="day"  onclick="pickGoalType('day')">Diario</button>
+      <button class="goal-type-btn"        data-t="week" onclick="pickGoalType('week')">Semanal</button>
+      <button class="goal-type-btn"        data-t="month" onclick="pickGoalType('month')">Mensual</button>
+    </div>
+    <div class="goal-times-row hidden" id="goalTimesRow">
+      <button class="goal-cnt-btn" onclick="changeGoalTimes(-1)">−</button>
+      <span id="goalTimesVal">3</span>
+      <span class="goal-times-label" id="goalTimesLabel">veces por semana</span>
+      <button class="goal-cnt-btn" onclick="changeGoalTimes(1)">+</button>
+    </div>
     <button class="btn-primary" id="saveHabitBtn">Guardar Hábito</button>
     <button class="btn-danger" id="deleteHabitBtn" style="display:none">Eliminar Hábito</button>
   </div>
@@ -318,6 +352,8 @@ let listDays    = 5;
 let editingId   = null;
 let selIcon     = ICONS[0];
 let selColor    = COLORS[4];
+let selGoalType  = 'day';
+let selGoalTimes = 3;
 
 // ════════════════════════════════════════
 // STORAGE
@@ -402,6 +438,74 @@ function bestStreak(h) {
     if (cur > best) best = cur;
   }
   return best;
+}
+
+// ════════════════════════════════════════
+// GOAL HELPERS
+// ════════════════════════════════════════
+function getGoal(h) { return h.goal || { type: 'day', times: 1 }; }
+
+function weekStart(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() - (d.getDay() + 6) % 7);
+  return ds(d);
+}
+
+function metInPeriod(h, ps, pe) {
+  const t = today();
+  let done = 0, d = new Date(ps + 'T12:00:00');
+  const end = new Date(Math.min(+new Date(pe + 'T12:00:00'), +new Date(t + 'T12:00:00')));
+  while (d <= end) { if (h.completions.has(ds(d))) done++; d.setDate(d.getDate()+1); }
+  return done >= getGoal(h).times;
+}
+
+function goalProgress(h) {
+  const g = getGoal(h), t = today();
+  if (g.type === 'day') {
+    const done = h.completions.has(t) ? 1 : 0;
+    return { done, target: 1, label: 'hoy', pct: done * 100 };
+  }
+  if (g.type === 'week') {
+    const ws = weekStart(t);
+    let done = 0;
+    for (let i = 0; i < 7; i++) { const d = shiftDay(ws,i); if (d>t) break; if (h.completions.has(d)) done++; }
+    return { done, target: g.times, label: 'esta semana', pct: Math.min(100, Math.round(done/g.times*100)) };
+  }
+  const mk = t.slice(0,7);
+  const done = [...h.completions].filter(d => d.startsWith(mk)).length;
+  return { done, target: g.times, label: 'este mes', pct: Math.min(100, Math.round(done/g.times*100)) };
+}
+
+function goalStreak(h) {
+  const g = getGoal(h);
+  if (g.type === 'day') return streak(h);
+  const t = today();
+  let ps, pe, prevPeriod;
+
+  if (g.type === 'week') {
+    ps = weekStart(t);
+    pe = shiftDay(ps, 6);
+    prevPeriod = (s) => ({ ps: shiftDay(s,-7), pe: shiftDay(s,-1) });
+  } else {
+    const d = new Date(t + 'T12:00:00');
+    ps = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+    pe = ds(new Date(d.getFullYear(), d.getMonth()+1, 0));
+    prevPeriod = (s) => {
+      const p = new Date(s + 'T12:00:00'); p.setMonth(p.getMonth()-1);
+      const nps = `${p.getFullYear()}-${String(p.getMonth()+1).padStart(2,'0')}-01`;
+      const npe = ds(new Date(p.getFullYear(), p.getMonth()+1, 0));
+      return { ps: nps, pe: npe };
+    };
+  }
+
+  if (!metInPeriod(h, ps, pe)) { const p = prevPeriod(ps); ps = p.ps; pe = p.pe; }
+  let cnt = 0;
+  for (let i = 0; i < 500; i++) {
+    if (!metInPeriod(h, ps, pe)) break;
+    cnt++;
+    const p = prevPeriod(ps); ps = p.ps; pe = p.pe;
+  }
+  return cnt;
 }
 
 // ════════════════════════════════════════
@@ -539,12 +643,14 @@ function renderDetail(el) {
 
   const cards = habits.map(h => {
     const done  = h.completions.has(t);
-    const s     = streak(h);
+    const g     = getGoal(h);
+    const s     = goalStreak(h);
+    const prog  = goalProgress(h);
     const r30   = rate(h, 30);
 
     // Build 7-row heatmap (columns = weeks)
     // Start from Mon of oldest week to show ~15 weeks
-    const numWeeks = 15;
+    const numWeeks = 30;
     const startD   = new Date(t + 'T12:00:00');
     // go back numWeeks*7 days then align to Monday
     startD.setDate(startD.getDate() - numWeeks * 7);
@@ -582,7 +688,8 @@ function renderDetail(el) {
         </div>
         <div class="detail-name-wrap">
           <div class="detail-name">${esc(h.name)}</div>
-          <div class="detail-streak">${s > 0 ? `🔥 ${s} día${s!==1?'s':''} de racha` : 'Sin racha activa'}</div>
+          <div class="detail-streak">${s > 0 ? `🔥 ${s} ${g.type==='week'?'sem':g.type==='month'?'mes'+( s!==1?'es':''):s!==1?'días':'día'} de racha` : 'Sin racha activa'}</div>
+          <div class="goal-badge"><span class="material-icons-round">flag</span>${g.type==='day'?'Diario':g.times+'× '+( g.type==='week'?'sem.':'mes')}</div>
         </div>
         <div class="detail-actions">
           <button class="detail-edit-btn" onclick="openEdit('${h.id}')" title="Editar">
@@ -595,18 +702,22 @@ function renderDetail(el) {
         </div>
       </div>
       <div class="heatmap">${hmHtml}</div>
+      ${g.type !== 'day' ? `
+      <div class="goal-bar-wrap">
+        <div class="goal-bar-fill" style="width:${prog.pct}%;background:${h.color}"></div>
+      </div>` : ''}
       <div class="stats-row">
         <div class="stat-pill">
           <div class="stat-val" style="color:${h.color}">${s}</div>
-          <div class="stat-lbl">Racha</div>
+          <div class="stat-lbl">${g.type==='week'?'Sem.':g.type==='month'?'Meses':'Días'} racha</div>
         </div>
         <div class="stat-pill">
-          <div class="stat-val" style="color:${h.color}">${r30}%</div>
-          <div class="stat-lbl">Último mes</div>
+          <div class="stat-val" style="color:${prog.pct>=100?h.color:'#fff'}">${g.type==='day'?r30+'%':prog.done+'/'+prog.target}</div>
+          <div class="stat-lbl">${g.type==='day'?'Último mes':prog.label}</div>
         </div>
         <div class="stat-pill">
           <div class="stat-val" style="color:${h.color}">${h.completions.size}</div>
-          <div class="stat-lbl">Total días</div>
+          <div class="stat-lbl">Total</div>
         </div>
       </div>
     </div>`;
@@ -639,6 +750,7 @@ function toggleDay(id, d) {
 // ════════════════════════════════════════
 function openAdd() {
   editingId = null; selIcon = ICONS[0]; selColor = COLORS[4];
+  selGoalType = 'day'; selGoalTimes = 3;
   document.getElementById('sheetTitle').textContent = 'Nuevo Hábito';
   document.getElementById('habitName').value = '';
   document.getElementById('saveHabitBtn').textContent = 'Guardar Hábito';
@@ -651,6 +763,8 @@ function openEdit(id) {
   const h = habits.find(h => h.id === id);
   if (!h) return;
   editingId = id; selIcon = h.icon; selColor = h.color;
+  const g = getGoal(h);
+  selGoalType = g.type; selGoalTimes = g.times;
   document.getElementById('sheetTitle').textContent = 'Editar Hábito';
   document.getElementById('habitName').value = h.name;
   document.getElementById('saveHabitBtn').textContent = 'Actualizar';
@@ -672,6 +786,10 @@ function buildPickers() {
   document.getElementById('colorGrid').innerHTML = COLORS.map(c =>
     `<div class="color-opt${c===selColor?' sel':''}" data-c="${c}" style="background:${c}"></div>`
   ).join('');
+  document.querySelectorAll('.goal-type-btn').forEach(b => b.classList.toggle('active', b.dataset.t === selGoalType));
+  document.getElementById('goalTimesRow').classList.toggle('hidden', selGoalType === 'day');
+  document.getElementById('goalTimesVal').textContent = selGoalTimes;
+  document.getElementById('goalTimesLabel').textContent = selGoalType === 'week' ? 'veces por semana' : 'veces por mes';
 }
 function pickIcon(ic) {
   selIcon = ic;
@@ -693,15 +811,29 @@ function saveHabit() {
     setTimeout(() => document.getElementById('habitName').style.borderColor = '', 1500);
     document.getElementById('habitName').focus(); return;
   }
+  const goal = selGoalType === 'day' ? { type: 'day', times: 1 } : { type: selGoalType, times: selGoalTimes };
   if (editingId) {
     const h = habits.find(h => h.id === editingId);
-    h.name = name; h.icon = selIcon; h.color = selColor;
+    h.name = name; h.icon = selIcon; h.color = selColor; h.goal = goal;
   } else {
     habits.push({ id: crypto.randomUUID(), name, icon: selIcon, color: selColor,
-      completions: new Set(), createdAt: today() });
+      goal, completions: new Set(), createdAt: today() });
   }
   persist(); closeHabit(); render();
   toast(editingId ? 'Hábito actualizado ✓' : '¡Hábito creado! 🚀');
+}
+
+function pickGoalType(t) {
+  selGoalType = t;
+  document.querySelectorAll('.goal-type-btn').forEach(b => b.classList.toggle('active', b.dataset.t === t));
+  const row = document.getElementById('goalTimesRow');
+  const lbl = document.getElementById('goalTimesLabel');
+  row.classList.toggle('hidden', t === 'day');
+  if (lbl) lbl.textContent = t === 'week' ? 'veces por semana' : 'veces por mes';
+}
+function changeGoalTimes(delta) {
+  selGoalTimes = Math.max(1, Math.min(selGoalTimes + delta, 31));
+  document.getElementById('goalTimesVal').textContent = selGoalTimes;
 }
 function deleteHabit() {
   if (!confirm('¿Eliminar este hábito? Se perderá todo el progreso.')) return;
@@ -797,6 +929,15 @@ const DRIVE_UPLOAD    = 'https://www.googleapis.com/upload/drive/v3';
 let driveToken  = null;
 let driveFileId = null;
 let tokenClient = null;
+let refreshTimer = null;
+
+function scheduleTokenRefresh(msUntilExpiry) {
+  clearTimeout(refreshTimer);
+  const delay = Math.max(msUntilExpiry - 5 * 60 * 1000, 10 * 1000);
+  refreshTimer = setTimeout(() => {
+    if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+  }, delay);
+}
 
 window.initGIS = function () {
   if (typeof google === 'undefined') return;
@@ -806,14 +947,20 @@ window.initGIS = function () {
     callback: async (resp) => {
       if (resp.error) { setDriveStatus('error'); return; }
       driveToken = resp.access_token;
+      const expiry = Date.now() + 3500 * 1000;
       localStorage.setItem('drive_token',  driveToken);
-      localStorage.setItem('drive_expiry', Date.now() + 3500 * 1000);
+      localStorage.setItem('drive_expiry', expiry);
+      scheduleTokenRefresh(3500 * 1000);
       await syncWithDrive();
     }
   });
   const token  = localStorage.getItem('drive_token');
   const expiry = parseInt(localStorage.getItem('drive_expiry') || '0');
-  if (token && Date.now() < expiry) { driveToken = token; syncWithDrive(); }
+  if (token && Date.now() < expiry) {
+    driveToken = token;
+    scheduleTokenRefresh(expiry - Date.now());
+    syncWithDrive();
+  }
 };
 
 function connectDrive() {
@@ -823,6 +970,7 @@ function connectDrive() {
 }
 
 function disconnectDrive() {
+  clearTimeout(refreshTimer);
   google.accounts.oauth2.revoke(driveToken, () => {});
   driveToken = null; driveFileId = null;
   ['drive_token','drive_expiry','drive_file_id'].forEach(k => localStorage.removeItem(k));

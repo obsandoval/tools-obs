@@ -107,6 +107,15 @@
     let driveToken  = null;
     let driveFileId = null;
     let tokenClient = null;
+    let refreshTimer = null;
+
+    function scheduleTokenRefresh(msUntilExpiry) {
+      clearTimeout(refreshTimer);
+      const delay = Math.max(msUntilExpiry - 5 * 60 * 1000, 10 * 1000);
+      refreshTimer = setTimeout(() => {
+        if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+      }, delay);
+    }
 
     window.initGIS = function () {
       if (typeof google === 'undefined') return;
@@ -116,14 +125,19 @@
         callback: async (resp) => {
           if (resp.error) { setDriveStatus('error'); return; }
           driveToken = resp.access_token;
+          const expiry = Date.now() + 3500 * 1000;
           localStorage.setItem('drive_token',  driveToken);
-          localStorage.setItem('drive_expiry', Date.now() + 3500 * 1000);
+          localStorage.setItem('drive_expiry', expiry);
+          scheduleTokenRefresh(3500 * 1000);
           await syncWithDrive();
         }
       });
       const token  = localStorage.getItem('drive_token');
       const expiry = parseInt(localStorage.getItem('drive_expiry') || '0');
-      if (token && Date.now() < expiry) { driveToken = token; }
+      if (token && Date.now() < expiry) {
+        driveToken = token;
+        scheduleTokenRefresh(expiry - Date.now());
+      }
     };
 
     function connectDrive() {
@@ -133,6 +147,7 @@
     }
 
     function disconnectDrive() {
+      clearTimeout(refreshTimer);
       google.accounts.oauth2.revoke(driveToken, () => {});
       driveToken = null; driveFileId = null;
       ['drive_token','drive_expiry','drive_file_id_menu'].forEach(k => localStorage.removeItem(k));
