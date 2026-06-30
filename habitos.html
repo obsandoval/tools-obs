@@ -71,7 +71,7 @@
     .card-mini-check.undone { background: rgba(0,0,0,.22); color: rgba(255,255,255,.35); }
     .dot-grid { display: flex; flex-direction: column; gap: 2.5px; margin-top: auto; }
     .dot-row { display: flex; gap: 2.5px; }
-    .dot { width: 6.5px; height: 6.5px; border-radius: 2px; flex-shrink: 0; }
+    .dot { width: 6.5px; height: 6.5px; border-radius: 50%; flex-shrink: 0; }
 
     /* ── LIST VIEW ── */
     .list-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -99,8 +99,8 @@
     .day-sq:active { transform: scale(.85); }
 
     /* ── DETAIL VIEW ── */
-    .detail-card { border-radius: var(--radius); padding: 15px; margin-bottom: 10px; }
-    .detail-top { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+    .detail-card { border-radius: var(--radius); padding: 11px 12px; margin-bottom: 8px; }
+    .detail-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .detail-icon { width: 46px; height: 46px; border-radius: 13px; display: flex;
       align-items: center; justify-content: center; flex-shrink: 0; }
     .detail-icon .material-icons-round { font-size: 22px; }
@@ -116,14 +116,14 @@
       background: rgba(255,255,255,.07); color: var(--text2); cursor: pointer;
       display: flex; align-items: center; justify-content: center; }
     .detail-edit-btn .material-icons-round { font-size: 17px; }
-    .heatmap { display: flex; flex-direction: column; gap: 2.5px; overflow-x: hidden; }
-    .heatmap-row { display: flex; gap: 2.5px; }
-    .hm-dot { height: 9px; border-radius: 2px; flex-shrink: 0; flex: 1; min-width: 0; }
-    .stats-row { display: flex; gap: 7px; margin-top: 12px; }
-    .stat-pill { background: rgba(255,255,255,.05); border-radius: 10px; padding: 9px 8px;
+    .heatmap { display: flex; flex-direction: column; gap: 2px; overflow-x: hidden; }
+    .heatmap-row { display: flex; gap: 2px; }
+    .hm-dot { aspect-ratio: 1; border-radius: 50%; flex: 1; min-width: 0; }
+    .stats-row { display: flex; gap: 6px; margin-top: 9px; }
+    .stat-pill { background: rgba(255,255,255,.05); border-radius: 10px; padding: 7px 6px;
       flex: 1; text-align: center; }
-    .stat-val { font-size: 15px; font-weight: 700; }
-    .stat-lbl { font-size: 9.5px; color: var(--text3); margin-top: 2px; }
+    .stat-val { font-size: 13px; font-weight: 700; }
+    .stat-lbl { font-size: 9px; color: var(--text3); margin-top: 2px; }
 
     /* ── MODAL ── */
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72);
