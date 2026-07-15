@@ -248,8 +248,21 @@
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 this.ctx = new AudioContextClass();
             }
-            if (this.ctx.state === 'suspended') {
-                this.ctx.resume();
+            // Safari / Webkit state check and resume
+            if (this.ctx.state === 'suspended' || !this.ctx.state) {
+                if (this.ctx.resume) {
+                    this.ctx.resume();
+                }
+            }
+            // Safari dummy sound unlock trigger
+            try {
+                const buffer = this.ctx.createBuffer(1, 1, 22050);
+                const source = this.ctx.createBufferSource();
+                source.buffer = buffer;
+                source.connect(this.ctx.destination);
+                source.start(0);
+            } catch (e) {
+                console.warn("Safari unlock failed", e);
             }
         }
 
@@ -271,12 +284,13 @@
             osc.type = type;
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
 
-            gainNode.gain.setValueAtTime(0, this.ctx.currentTime + delay);
+            // Safari exponential ramp cannot start at 0
+            gainNode.gain.setValueAtTime(0.0001, this.ctx.currentTime + delay);
             
             if (customEnvelope) {
                 customEnvelope(gainNode.gain, this.ctx.currentTime + delay, duration, this.volume);
             } else {
-                // Default linear ramp envelope
+                // Default linear ramp envelope (safe from 0.0001)
                 gainNode.gain.linearRampToValueAtTime(this.volume, this.ctx.currentTime + delay + 0.02);
                 gainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + delay + duration);
             }
@@ -295,7 +309,6 @@
 
         // Play alert for transition to Rest
         playRestChime() {
-            // Smooth descending sweep
             if (this.muted || this.volume <= 0) return;
             this.initContext();
 
@@ -307,7 +320,8 @@
             osc.frequency.setValueAtTime(660, t);
             osc.frequency.exponentialRampToValueAtTime(330, t + 0.35);
 
-            gain.gain.setValueAtTime(0, t);
+            // Start gain at 0.0001 for Safari safety
+            gain.gain.setValueAtTime(0.0001, t);
             gain.gain.linearRampToValueAtTime(this.volume, t + 0.05);
             gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
 
@@ -322,17 +336,17 @@
         playWorkChime() {
             // Bright dual harmonic beep
             this.playTone(660, 'sine', 0.15, 0, (gainParam, time, dur, vol) => {
-                gainParam.setValueAtTime(0, time);
+                gainParam.setValueAtTime(0.0001, time);
                 gainParam.linearRampToValueAtTime(vol * 0.8, time + 0.02);
                 gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
             });
             this.playTone(880, 'sine', 0.15, 0.08, (gainParam, time, dur, vol) => {
-                gainParam.setValueAtTime(0, time);
+                gainParam.setValueAtTime(0.0001, time);
                 gainParam.linearRampToValueAtTime(vol, time + 0.02);
                 gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
             });
             this.playTone(1320, 'sine', 0.25, 0.16, (gainParam, time, dur, vol) => {
-                gainParam.setValueAtTime(0, time);
+                gainParam.setValueAtTime(0.0001, time);
                 gainParam.linearRampToValueAtTime(vol * 0.9, time + 0.03);
                 gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
             });
@@ -343,7 +357,7 @@
             const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
             notes.forEach((freq, index) => {
                 this.playTone(freq, 'sine', 0.25, index * 0.12, (gainParam, time, dur, vol) => {
-                    gainParam.setValueAtTime(0, time);
+                    gainParam.setValueAtTime(0.0001, time);
                     gainParam.linearRampToValueAtTime(vol * 0.8, time + 0.02);
                     gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
                 });
@@ -356,7 +370,7 @@
             const chord = [1.0, 1.25, 1.5, 2.0, 2.5]; // C5, E5, G5, C6, E6
             chord.forEach((mult, index) => {
                 this.playTone(root * mult, 'sine', 0.8, index * 0.1, (gainParam, time, dur, vol) => {
-                    gainParam.setValueAtTime(0, time);
+                    gainParam.setValueAtTime(0.0001, time);
                     gainParam.linearRampToValueAtTime(vol * 0.7, time + 0.05);
                     gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
                 });
