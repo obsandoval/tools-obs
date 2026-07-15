@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entreno Tabata - ToolsObs</title>
+    <!-- Icon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='5' fill='%230e0e0f'/><path fill='%23f43f5e' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.5h-2v-6h2v6zm0-8h-2v-2h2v2z'/></svg>">
+    <!-- Google Fonts & Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/tabata.css">
+</head>
+<body class="state-ready">
+
+<div class="wrapper">
+    <header>
+        <a href="index.html" class="back-btn" aria-label="Volver al panel">
+            <span class="material-icons-round">arrow_back</span>
+        </a>
+        <div class="app-title">
+            <span class="app-eyebrow">Entrenamiento</span>
+            <span class="app-name">Temporizador Tabata</span>
+        </div>
+        
+        <div class="preset-dropdown-wrap">
+            <button class="preset-btn" id="preset-btn-toggle" onclick="togglePresetMenu()">
+                <span class="material-icons-round">bookmark</span>
+                <span id="active-preset-name">Tabata Clásico</span>
+                <span class="material-icons-round">expand_more</span>
+            </button>
+            <div class="preset-menu" id="preset-menu">
+                <!-- Presets loaded dynamically -->
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <!-- Left Column: Giant Interactive circular timer -->
+        <main class="timer-panel">
+            <div class="timer-ring-container">
+                <svg class="timer-svg" viewBox="0 0 260 260">
+                    <circle class="timer-ring-track" cx="130" cy="130" r="120"></circle>
+                    <circle class="timer-ring-fill" id="timer-ring-fill" cx="130" cy="130" r="120" stroke-dasharray="754" stroke-dashoffset="0"></circle>
+                </svg>
+                <div class="timer-content">
+                    <span class="state-label" id="timer-state-label">Listo</span>
+                    <span class="time-display" id="timer-time-display">00:00</span>
+                    <span class="phase-progress" id="timer-phase-progress">Presiona Iniciar</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Column: Stats and Controls -->
+        <aside class="control-panel">
+            
+            <!-- Overall Stats -->
+            <section class="stats-card">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Restante total</span>
+                        <span class="stat-value highlight" id="stat-time-remaining">00:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Transcurrido</span>
+                        <span class="stat-value" id="stat-time-elapsed">00:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Ciclo</span>
+                        <span class="stat-value" id="stat-cycle-progress">0 / 0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Intervalo</span>
+                        <span class="stat-value" id="stat-interval-progress">0 / 0</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span>Progreso General</span>
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Timeline dots -->
+                <div class="timeline-section" id="timeline-section">
+                    <span class="timeline-title">Estructura del entreno</span>
+                    <div class="timeline-dots" id="timeline-dots">
+                        <!-- Dynamic timeline dots -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Workout controls -->
+            <section class="controls-card">
+                <!-- Settings toggle -->
+                <button class="btn-icon btn-secondary" onclick="toggleSettings()" title="Ajustar Tiempos" id="settings-toggle-btn">
+                    <span class="material-icons-round">settings</span>
+                </button>
+                
+                <!-- Restart -->
+                <button class="btn-icon btn-secondary" onclick="restartWorkout()" title="Reiniciar entrenamiento" id="reset-btn">
+                    <span class="material-icons-round">replay</span>
+                </button>
+
+                <!-- Primary Play/Pause -->
+                <button class="btn-icon btn-primary" onclick="toggleWorkout()" title="Iniciar/Pausar" id="play-btn">
+                    <span class="material-icons-round" id="play-icon">play_arrow</span>
+                </button>
+
+                <!-- Skip forward -->
+                <button class="btn-icon btn-secondary" onclick="skipStep()" title="Siguiente intervalo" id="skip-btn">
+                    <span class="material-icons-round">skip_next</span>
+                </button>
+
+                <!-- Wake Lock Status Info -->
+                <div class="wakelock-status" id="wakelock-badge" title="Mantiene la pantalla encendida automáticamente mientras corre">
+                    <div class="wakelock-dot"></div>
+                    <span>S.W.L.</span>
+                </div>
+            </section>
+
+        </aside>
+    </div>
+
+    <!-- Collapsible Settings Panel -->
+    <section class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h3 class="settings-title">
+                <span class="material-icons-round" style="color: var(--theme-color);">edit_calendar</span>
+                Configurar Intervalos
+            </h3>
+            <span class="stat-label" id="calc-total-duration">Total: 04:20</span>
+        </div>
+
+        <div class="settings-grid">
+            
+            <!-- Prep Duration -->
+            <div class="input-group">
+                <label class="input-label">Preparación (s)</label>
+                <div class="input-control-wrap">
+                    <button class="input-btn" onclick="adjustInput('input-prep', -1)"><span class="material-icons-round">remove</span></button>
+                    <input type="number" id="input-prep" class="input-field" value="10" min="0" max="300" onchange="onSettingChanged()">
+                    <button class="input-btn" onclick="adjustInput('input-prep', 1)"><span class="material-icons-round">add</span></button>
+                </div>
+            </div>
+
+            <!-- Work Duration -->
+            <div class="input-group">
+                <label class="input-label">Trabajo (s)</label>
+                <div class="input-control-wrap">
+                    <button class="input-btn" onclick="adjustInput('input-work', -5)"><span class="material-icons-round">remove</span></button>
+                    <input type="number" id="input-work" class="input-field" value="20" min="5" max="600" onchange="onSettingChanged()">
+                    <button class="input-btn" onclick="adjustInput('input-work', 5)"><span class="material-icons-round">add</span></button>
+                </div>
+            </div>
+
+            <!-- Rest Duration -->
+            <div class="input-group">
+                <label class="input-label">Descanso (s)</label>
+                <div class="input-control-wrap">
+                    <button class="input-btn" onclick="adjustInput('input-rest', -5)"><span class="material-icons-round">remove</span></button>
+                    <input type="number" id="input-rest" class="input-field" value="10" min="0" max="600" onchange="onSettingChanged()">
+                    <button class="input-btn" onclick="adjustInput('input-rest', 5)"><span class="material-icons-round">add</span></button>
+                </div>
+            </div>
+
+            <!-- Intervals per Cycle -->
+            <div class="input-group">
+                <label class="input-label">Intervalos por Ciclo</label>
+                <div class="input-control-wrap">
+                    <button class="input-btn" onclick="adjustInput('input-intervals', -1)"><span class="material-icons-round">remove</span></button>
+                    <input type="number" id="input-intervals" class="input-field" value="8" min="1" max="50" onchange="onSettingChanged()">
+                    <button class="input-btn" onclick="adjustInput('input-intervals', 1)"><span class="material-icons-round">add</span></button>
+                </div>
+            </div>
+
+            <!-- Cycles -->
+            <div class="input-group">
+                <label class="input-label">Cantidad de Ciclos</label>
+                <div class="input-control-wrap">
+                    <button class="input-btn" onclick="adjustInput('input-cycles', -1)"><span class="material-icons-round">remove</span></button>
+                    <input type="number" id="input-cycles" class="input-field" value="1" min="1" max="30" onchange="onSettingChanged()">
+                    <button class="input-btn" onclick="adjustInput('input-cycles', 1)"><span class="material-icons-round">add</span></button>
+                </div>
+            </div>
+
+            <!-- Cycle Rest Duration -->
+            <div class="input-group">
+                <label class="input-label">Descanso entre Ciclos (s)</label>
+                <div class="input-control-wrap">
+                    <button class="input-btn" onclick="adjustInput('input-cyclerest', -5)"><span class="material-icons-round">remove</span></button>
+                    <input type="number" id="input-cyclerest" class="input-field" value="0" min="0" max="600" onchange="onSettingChanged()">
+                    <button class="input-btn" onclick="adjustInput('input-cyclerest', 5)"><span class="material-icons-round">add</span></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Audio Configuration -->
+        <div class="audio-settings-card">
+            <label class="input-label" style="display: flex; align-items: center; justify-content: space-between;">
+                <span>Volumen de Alertas</span>
+                <span id="volume-pct-label">80%</span>
+            </label>
+            <div class="audio-controls">
+                <button class="btn-icon btn-secondary" style="width:36px; height:36px;" id="mute-toggle-btn" onclick="toggleMute()" title="Silenciar">
+                    <span class="material-icons-round" id="mute-icon">volume_up</span>
+                </button>
+                <input type="range" class="audio-volume-slider" id="volume-slider" min="0" max="100" value="80" oninput="onVolumeSliderInput(this.value)">
+                <button class="audio-test-btn" onclick="playTestSound()">Probar Sonido</button>
+            </div>
+        </div>
+
+        <!-- Save Custom Preset -->
+        <div class="preset-actions">
+            <button class="btn-preset-save" onclick="promptSavePreset()">
+                <span class="material-icons-round">save</span>
+                Guardar como Preset
+            </button>
+            <button class="btn-preset-reset" onclick="resetToFactoryDefaults()">
+                Restablecer
+            </button>
+        </div>
+    </section>
+
+    <footer>Hecho por Ob Sandoval</footer>
+</div>
+
+<!-- Sound synthesis and app engine script -->
+<script>
+    // ── Web Audio Synth Engine ─────────────────────────────────
+    class WorkoutSynth {
+        constructor() {
+            this.ctx = null;
+            this.volume = 0.8;
+            this.muted = false;
+        }
+
+        initContext() {
+            if (!this.ctx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContextClass();
+            }
+            if (this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
+        }
+
+        setVolume(val) {
+            this.volume = Math.max(0, Math.min(1, val));
+        }
+
+        setMuted(muted) {
+            this.muted = muted;
+        }
+
+        playTone(freq, type, duration, delay = 0, customEnvelope = null) {
+            if (this.muted || this.volume <= 0) return;
+            this.initContext();
+
+            const osc = this.ctx.createOscillator();
+            const gainNode = this.ctx.createGain();
+
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+
+            gainNode.gain.setValueAtTime(0, this.ctx.currentTime + delay);
+            
+            if (customEnvelope) {
+                customEnvelope(gainNode.gain, this.ctx.currentTime + delay, duration, this.volume);
+            } else {
+                // Default linear ramp envelope
+                gainNode.gain.linearRampToValueAtTime(this.volume, this.ctx.currentTime + delay + 0.02);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + delay + duration);
+            }
+
+            osc.connect(gainNode);
+            gainNode.connect(this.ctx.destination);
+
+            osc.start(this.ctx.currentTime + delay);
+            osc.stop(this.ctx.currentTime + delay + duration);
+        }
+
+        // Play standard short beep for countdown ticks
+        playBeep() {
+            this.playTone(880, 'sine', 0.12);
+        }
+
+        // Play alert for transition to Rest
+        playRestChime() {
+            // Smooth descending sweep
+            if (this.muted || this.volume <= 0) return;
+            this.initContext();
+
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(660, t);
+            osc.frequency.exponentialRampToValueAtTime(330, t + 0.35);
+
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(this.volume, t + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(t);
+            osc.stop(t + 0.4);
+        }
+
+        // Play alert for transition to Work
+        playWorkChime() {
+            // Bright dual harmonic beep
+            this.playTone(660, 'sine', 0.15, 0, (gainParam, time, dur, vol) => {
+                gainParam.setValueAtTime(0, time);
+                gainParam.linearRampToValueAtTime(vol * 0.8, time + 0.02);
+                gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
+            });
+            this.playTone(880, 'sine', 0.15, 0.08, (gainParam, time, dur, vol) => {
+                gainParam.setValueAtTime(0, time);
+                gainParam.linearRampToValueAtTime(vol, time + 0.02);
+                gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
+            });
+            this.playTone(1320, 'sine', 0.25, 0.16, (gainParam, time, dur, vol) => {
+                gainParam.setValueAtTime(0, time);
+                gainParam.linearRampToValueAtTime(vol * 0.9, time + 0.03);
+                gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
+            });
+        }
+
+        // Play alert for Cycle Rest transition
+        playCycleRestChime() {
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+            notes.forEach((freq, index) => {
+                this.playTone(freq, 'sine', 0.25, index * 0.12, (gainParam, time, dur, vol) => {
+                    gainParam.setValueAtTime(0, time);
+                    gainParam.linearRampToValueAtTime(vol * 0.8, time + 0.02);
+                    gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
+                });
+            });
+        }
+
+        // Play workout victory sound
+        playVictoryChime() {
+            const root = 523.25; // C5
+            const chord = [1.0, 1.25, 1.5, 2.0, 2.5]; // C5, E5, G5, C6, E6
+            chord.forEach((mult, index) => {
+                this.playTone(root * mult, 'sine', 0.8, index * 0.1, (gainParam, time, dur, vol) => {
+                    gainParam.setValueAtTime(0, time);
+                    gainParam.linearRampToValueAtTime(vol * 0.7, time + 0.05);
+                    gainParam.exponentialRampToValueAtTime(0.0001, time + dur);
+                });
+            });
+        }
+    }
+
+    const synth = new WorkoutSynth();
+
+    // ── Pre-defined Presets ────────────────────────────────────
+    const FACTORY_PRESETS = [
+        {
+            id: 'tabata-classic',
+            name: 'Tabata Clásico',
+            prep: 10,
+            work: 20,
+            rest: 10,
+            intervals: 8,
+            cycles: 1,
+            cyclerest: 0
+        },
+        {
+            id: 'hiit-cardio',
+            name: 'HIIT Cardio',
+            prep: 10,
+            work: 30,
+            rest: 15,
+            intervals: 6,
+            cycles: 4,
+            cyclerest: 45
+        },
+        {
+            id: 'resistencia-ext',
+            name: 'Resistencia Extrema',
+            prep: 15,
+            work: 40,
+            rest: 20,
+            intervals: 8,
+            cycles: 3,
+            cyclerest: 60
+        },
+        {
+            id: 'fuerza-bloques',
+            name: 'Fuerza en Bloques',
+            prep: 10,
+            work: 45,
+            rest: 15,
+            intervals: 5,
+            cycles: 5,
+            cyclerest: 90
+        }
+    ];
+
+    // ── Application State Variables ────────────────────────────
+    let presets = [];
+    let activePresetId = 'tabata-classic';
+    let workoutState = 'ready'; // ready, playing, paused, complete
+    let workoutSteps = [];
+    let currentStepIndex = 0;
+    
+    // Ticking engine variables
+    let stepTimeRemaining = 0; // remaining time in current step (seconds)
+    let totalWorkoutDuration = 0;
+    let totalTimeElapsed = 0;
+    let runningConfig = { prep: 10, work: 20, rest: 10, intervals: 8, cycles: 1, cyclerest: 0 };
+    
+    // Precision timer variables
+    let timerInterval = null;
+    let lastTickTime = null;
+    
+    // Screen Wake Lock handle
+    let wakeLock = null;
+
+    // ── DOM References ─────────────────────────────────────────
+    const timerStateLabel = document.getElementById('timer-state-label');
+    const timerTimeDisplay = document.getElementById('timer-time-display');
+    const timerPhaseProgress = document.getElementById('timer-phase-progress');
+    const timerRingFill = document.getElementById('timer-ring-fill');
+    
+    const statTimeRemaining = document.getElementById('stat-time-remaining');
+    const statTimeElapsed = document.getElementById('stat-time-elapsed');
+    const statCycleProgress = document.getElementById('stat-cycle-progress');
+    const statIntervalProgress = document.getElementById('stat-interval-progress');
+    
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const timelineDots = document.getElementById('timeline-dots');
+    
+    const playIcon = document.getElementById('play-icon');
+    const playBtn = document.getElementById('play-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingsToggleBtn = document.getElementById('settings-toggle-btn');
+    const calcTotalDuration = document.getElementById('calc-total-duration');
+    
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumePctLabel = document.getElementById('volume-pct-label');
+    const muteIcon = document.getElementById('mute-icon');
+    const activePresetNameSpan = document.getElementById('active-preset-name');
+    const presetMenu = document.getElementById('preset-menu');
+    const wakelockBadge = document.getElementById('wakelock-badge');
+
+    // ── Lifecycle / Initialization ────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+        loadSettingsFromStorage();
+        initPresets();
+        compileWorkoutSteps();
+        resetTimerUI();
+        
+        // Listen for visibility change to re-request Wake Lock if page was backgrounded
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+    });
+
+    // ── Presets & Storage Management ───────────────────────────
+    function initPresets() {
+        const savedPresets = localStorage.getItem('tabata_custom_presets');
+        if (savedPresets) {
+            presets = [...FACTORY_PRESETS, ...JSON.parse(savedPresets)];
+        } else {
+            presets = [...FACTORY_PRESETS];
+        }
+        
+        activePresetId = localStorage.getItem('tabata_active_preset') || 'tabata-classic';
+        
+        renderPresetMenu();
+        applyPresetById(activePresetId, false);
+    }
+
+    function renderPresetMenu() {
+        presetMenu.innerHTML = '';
+        presets.forEach(p => {
+            const isCustom = !FACTORY_PRESETS.some(fp => fp.id === p.id);
+            
+            const btn = document.createElement('div');
+            btn.className = `preset-item ${p.id === activePresetId ? 'active' : ''}`;
+            btn.setAttribute('role', 'button');
+            btn.innerHTML = `
+                <span onclick="applyPresetById('${p.id}')">${escapeHTML(p.name)}</span>
+                ${isCustom ? `
+                    <button class="delete-preset-btn" onclick="event.stopPropagation(); deletePreset('${p.id}')" title="Eliminar preset">
+                        <span class="material-icons-round" style="font-size:16px;">delete</span>
+                    </button>
+                ` : ''}
+            `;
+            presetMenu.appendChild(btn);
+        });
+    }
+
+    function togglePresetMenu() {
+        presetMenu.classList.toggle('show');
+        // Close preset menu when clicking outside
+        const closeMenuHandler = (e) => {
+            if (!e.target.closest('.preset-dropdown-wrap')) {
+                presetMenu.classList.remove('show');
+                document.removeEventListener('click', closeMenuHandler);
+            }
+        };
+        if (presetMenu.classList.contains('show')) {
+            setTimeout(() => document.addEventListener('click', closeMenuHandler), 0);
+        }
+    }
+
+    function applyPresetById(id, userTriggered = true) {
+        if (userTriggered && (workoutState === 'playing' || workoutState === 'paused')) {
+            if (!confirm('¿Cambiar de preset reiniciará el entrenamiento actual?')) return;
+            stopTimerEngine();
+            workoutState = 'ready';
+            playIcon.textContent = 'play_arrow';
+            releaseWakeLock();
+        }
+        
+        const preset = presets.find(p => p.id === id);
+        if (!preset) return;
+        
+        activePresetId = id;
+        activePresetNameSpan.textContent = preset.name;
+        
+        document.getElementById('input-prep').value = preset.prep;
+        document.getElementById('input-work').value = preset.work;
+        document.getElementById('input-rest').value = preset.rest;
+        document.getElementById('input-intervals').value = preset.intervals;
+        document.getElementById('input-cycles').value = preset.cycles;
+        document.getElementById('input-cyclerest').value = preset.cyclerest;
+        
+        localStorage.setItem('tabata_active_preset', id);
+        
+        if (userTriggered) {
+            presetMenu.classList.remove('show');
+            onSettingChanged();
+        }
+    }
+
+    function promptSavePreset() {
+        const name = prompt('Introduce un nombre para tu preset:');
+        if (!name || name.trim() === '') return;
+        
+        const newPreset = {
+            id: 'custom-' + Date.now(),
+            name: name.trim(),
+            prep: parseInt(document.getElementById('input-prep').value) || 0,
+            work: parseInt(document.getElementById('input-work').value) || 20,
+            rest: parseInt(document.getElementById('input-rest').value) || 10,
+            intervals: parseInt(document.getElementById('input-intervals').value) || 8,
+            cycles: parseInt(document.getElementById('input-cycles').value) || 1,
+            cyclerest: parseInt(document.getElementById('input-cyclerest').value) || 0
+        };
+        
+        const customPresets = JSON.parse(localStorage.getItem('tabata_custom_presets') || '[]');
+        customPresets.push(newPreset);
+        localStorage.setItem('tabata_custom_presets', JSON.stringify(customPresets));
+        
+        presets.push(newPreset);
+        activePresetId = newPreset.id;
+        
+        renderPresetMenu();
+        applyPresetById(activePresetId, true);
+    }
+
+    function deletePreset(id) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este preset?')) return;
+        
+        let customPresets = JSON.parse(localStorage.getItem('tabata_custom_presets') || '[]');
+        customPresets = customPresets.filter(p => p.id !== id);
+        localStorage.setItem('tabata_custom_presets', JSON.stringify(customPresets));
+        
+        presets = presets.filter(p => p.id !== id);
+        if (activePresetId === id) {
+            activePresetId = 'tabata-classic';
+        }
+        
+        renderPresetMenu();
+        applyPresetById(activePresetId, true);
+    }
+
+    function resetToFactoryDefaults() {
+        if (!confirm('¿Restablecer presets de fábrica y configuraciones?')) return;
+        localStorage.removeItem('tabata_custom_presets');
+        localStorage.removeItem('tabata_active_preset');
+        initPresets();
+    }
+
+    function loadSettingsFromStorage() {
+        const savedVolume = localStorage.getItem('tabata_volume');
+        const savedMuted = localStorage.getItem('tabata_muted');
+        
+        if (savedVolume !== null) {
+            const vol = parseInt(savedVolume);
+            synth.setVolume(vol / 100);
+            volumeSlider.value = vol;
+            volumePctLabel.textContent = vol + '%';
+        }
+        
+        if (savedMuted === 'true') {
+            synth.setMuted(true);
+            muteIcon.textContent = 'volume_off';
+            document.getElementById('mute-toggle-btn').classList.add('muted');
+        }
+    }
+
+    function saveSettingsToStorage() {
+        localStorage.setItem('tabata_volume', volumeSlider.value);
+        localStorage.setItem('tabata_muted', synth.muted);
+    }
+
+    // ── Input Increments ───────────────────────────────────────
+    function adjustInput(id, delta) {
+        if (workoutState === 'playing' || workoutState === 'paused') {
+            if (!confirm('¿Modificar configuraciones reiniciará el temporizador activo?')) return;
+            stopTimerEngine();
+            workoutState = 'ready';
+            resetTimerUI();
+        }
+        
+        const input = document.getElementById(id);
+        let val = parseInt(input.value) || 0;
+        val += delta;
+        
+        const min = parseInt(input.getAttribute('min')) || 0;
+        const max = parseInt(input.getAttribute('max')) || 999;
+        
+        if (val < min) val = min;
+        if (val > max) val = max;
+        
+        input.value = val;
+        onSettingChanged();
+    }
+
+    function restoreInputsToRunning() {
+        document.getElementById('input-prep').value = runningConfig.prep;
+        document.getElementById('input-work').value = runningConfig.work;
+        document.getElementById('input-rest').value = runningConfig.rest;
+        document.getElementById('input-intervals').value = runningConfig.intervals;
+        document.getElementById('input-cycles').value = runningConfig.cycles;
+        document.getElementById('input-cyclerest').value = runningConfig.cyclerest;
+    }
+
+    function onSettingChanged() {
+        if (workoutState === 'playing' || workoutState === 'paused') {
+            if (!confirm('¿Modificar las configuraciones reiniciará el entrenamiento activo?')) {
+                restoreInputsToRunning();
+                return;
+            }
+            stopTimerEngine();
+            workoutState = 'ready';
+            playIcon.textContent = 'play_arrow';
+            releaseWakeLock();
+        }
+        
+        if (workoutState === 'complete') {
+            workoutState = 'ready';
+            playIcon.textContent = 'play_arrow';
+        }
+
+        // If we change settings, active preset is customized
+        const currentPreset = presets.find(p => p.id === activePresetId);
+        if (currentPreset) {
+            const prep = parseInt(document.getElementById('input-prep').value) || 0;
+            const work = parseInt(document.getElementById('input-work').value) || 20;
+            const rest = parseInt(document.getElementById('input-rest').value) || 10;
+            const intervals = parseInt(document.getElementById('input-intervals').value) || 8;
+            const cycles = parseInt(document.getElementById('input-cycles').value) || 1;
+            const cyclerest = parseInt(document.getElementById('input-cyclerest').value) || 0;
+            
+            if (currentPreset.prep !== prep || currentPreset.work !== work || currentPreset.rest !== rest ||
+                currentPreset.intervals !== intervals || currentPreset.cycles !== cycles || currentPreset.cyclerest !== cyclerest) {
+                activePresetId = 'custom';
+                activePresetNameSpan.textContent = 'Personalizado';
+                renderPresetMenu();
+            }
+        }
+        
+        compileWorkoutSteps();
+        
+        if (workoutState === 'ready') {
+            resetTimerUI();
+        }
+    }
+
+    // ── Audio Interface ────────────────────────────────────────
+    function onVolumeSliderInput(val) {
+        synth.setVolume(val / 100);
+        volumePctLabel.textContent = val + '%';
+        if (synth.muted && val > 0) {
+            toggleMute();
+        }
+        saveSettingsToStorage();
+    }
+
+    function toggleMute() {
+        synth.setMuted(!synth.muted);
+        if (synth.muted) {
+            muteIcon.textContent = 'volume_off';
+            document.getElementById('mute-toggle-btn').classList.add('muted');
+        } else {
+            muteIcon.textContent = 'volume_up';
+            document.getElementById('mute-toggle-btn').classList.remove('muted');
+        }
+        saveSettingsToStorage();
+    }
+
+    function playTestSound() {
+        synth.initContext();
+        synth.playWorkChime();
+    }
+
+    // ── Timer Logic Engine ─────────────────────────────────────
+    function compileWorkoutSteps() {
+        const prep = parseInt(document.getElementById('input-prep').value) || 0;
+        const work = parseInt(document.getElementById('input-work').value) || 20;
+        const rest = parseInt(document.getElementById('input-rest').value) || 10;
+        const intervals = parseInt(document.getElementById('input-intervals').value) || 8;
+        const cycles = parseInt(document.getElementById('input-cycles').value) || 1;
+        const cyclerest = parseInt(document.getElementById('input-cyclerest').value) || 0;
+
+        workoutSteps = [];
+        
+        // 1. Preparation phase (if > 0)
+        if (prep > 0) {
+            workoutSteps.push({
+                type: 'prep',
+                label: 'Preparación',
+                duration: prep,
+                cycle: 0,
+                interval: 0
+            });
+        }
+        
+        // 2. Main Cycles loop
+        for (let c = 1; c <= cycles; c++) {
+            for (let i = 1; i <= intervals; i++) {
+                // Work step
+                workoutSteps.push({
+                    type: 'work',
+                    label: 'Trabajo',
+                    duration: work,
+                    cycle: c,
+                    interval: i
+                });
+                
+                // Rest step (depends on position)
+                if (i < intervals) {
+                    if (rest > 0) {
+                        workoutSteps.push({
+                            type: 'rest',
+                            label: 'Descanso',
+                            duration: rest,
+                            cycle: c,
+                            interval: i
+                        });
+                    }
+                } else if (c < cycles) {
+                    // Last interval of cycle, but not final cycle -> Cycle Rest
+                    if (cyclerest > 0) {
+                        workoutSteps.push({
+                            type: 'cyclerest',
+                            label: 'Descanso de Ciclo',
+                            duration: cyclerest,
+                            cycle: c,
+                            interval: i
+                        });
+                    }
+                }
+            }
+        }
+        
+        // Calculate total workout duration
+        totalWorkoutDuration = workoutSteps.reduce((sum, step) => sum + step.duration, 0);
+        calcTotalDuration.textContent = 'Total: ' + formatTime(totalWorkoutDuration);
+        
+        // Render timeline dots
+        renderTimelineDots();
+    }
+
+    function renderTimelineDots() {
+        timelineDots.innerHTML = '';
+        workoutSteps.forEach((step, idx) => {
+            if (step.type === 'prep') return; // Prep phase doesn't get a dot
+            
+            const dot = document.createElement('div');
+            dot.className = `timeline-dot ${step.type}`;
+            dot.id = `dot-${idx}`;
+            dot.title = `${step.label} (${step.duration}s) - C${step.cycle} I${step.interval}`;
+            timelineDots.appendChild(dot);
+        });
+    }
+
+    function resetTimerUI() {
+        currentStepIndex = 0;
+        totalTimeElapsed = 0;
+        
+        if (workoutSteps.length > 0) {
+            const firstStep = workoutSteps[0];
+            stepTimeRemaining = firstStep.duration;
+            
+            timerStateLabel.textContent = translatePhase(firstStep.type);
+            timerTimeDisplay.textContent = formatTime(stepTimeRemaining);
+            
+            if (firstStep.type === 'prep') {
+                timerPhaseProgress.textContent = `Listos en ${stepTimeRemaining}s`;
+            } else {
+                timerPhaseProgress.textContent = `Ciclo ${firstStep.cycle} • Int. ${firstStep.interval}`;
+            }
+            
+            updateThemeClass(firstStep.type);
+            
+            // Stats Board
+            statTimeRemaining.textContent = formatTime(totalWorkoutDuration);
+            statTimeElapsed.textContent = '00:00';
+            
+            const totalCycles = parseInt(document.getElementById('input-cycles').value) || 1;
+            const totalIntervals = parseInt(document.getElementById('input-intervals').value) || 8;
+            statCycleProgress.textContent = `0 / ${totalCycles}`;
+            statIntervalProgress.textContent = `0 / ${totalIntervals}`;
+            
+            // Progress Bar & Rings
+            progressBar.style.width = '0%';
+            progressPercentage.textContent = '0%';
+            setRingProgress(1); // Full ring initially
+            
+            // Reset timeline dots classes
+            const dots = timelineDots.querySelectorAll('.timeline-dot');
+            dots.forEach(d => {
+                d.classList.remove('active', 'done');
+            });
+        } else {
+            timerStateLabel.textContent = 'Listo';
+            timerTimeDisplay.textContent = '00:00';
+            timerPhaseProgress.textContent = 'Configura y presiona Play';
+        }
+    }
+
+    function toggleWorkout() {
+        synth.initContext(); // Unlock audio context on click
+        
+        if (workoutState === 'ready' || workoutState === 'complete') {
+            if (workoutSteps.length === 0) return;
+            
+            runningConfig = {
+                prep: parseInt(document.getElementById('input-prep').value) || 0,
+                work: parseInt(document.getElementById('input-work').value) || 20,
+                rest: parseInt(document.getElementById('input-rest').value) || 10,
+                intervals: parseInt(document.getElementById('input-intervals').value) || 8,
+                cycles: parseInt(document.getElementById('input-cycles').value) || 1,
+                cyclerest: parseInt(document.getElementById('input-cyclerest').value) || 0
+            };
+            
+            workoutState = 'playing';
+            playIcon.textContent = 'pause';
+            
+            currentStepIndex = 0;
+            totalTimeElapsed = 0;
+            
+            const step = workoutSteps[currentStepIndex];
+            stepTimeRemaining = step.duration;
+            
+            requestWakeLock();
+            startTimerEngine();
+            playChimeForStep(step.type);
+            updateTimerDisplay();
+            
+        } else if (workoutState === 'playing') {
+            workoutState = 'paused';
+            playIcon.textContent = 'play_arrow';
+            stopTimerEngine();
+            releaseWakeLock();
+            
+        } else if (workoutState === 'paused') {
+            workoutState = 'playing';
+            playIcon.textContent = 'pause';
+            requestWakeLock();
+            startTimerEngine();
+        }
+    }
+
+    function startTimerEngine() {
+        lastTickTime = performance.now();
+        
+        // Precise timer run loop (ticks every 100ms to stay responsive to UI but checks delta-time accurately)
+        timerInterval = setInterval(() => {
+            if (workoutState !== 'playing') return;
+            
+            const now = performance.now();
+            const elapsedMs = now - lastTickTime;
+            
+            if (elapsedMs >= 1000) {
+                // One second has elapsed (or more)
+                const secondsPassed = Math.floor(elapsedMs / 1000);
+                lastTickTime = now - (elapsedMs % 1000); // Preserve precision remainder
+                
+                tick(secondsPassed);
+            }
+        }, 100);
+    }
+
+    function stopTimerEngine() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    function tick(secondsPassed) {
+        stepTimeRemaining -= secondsPassed;
+        totalTimeElapsed += secondsPassed;
+        
+        if (stepTimeRemaining <= 0) {
+            // Move to next step
+            currentStepIndex++;
+            if (currentStepIndex < workoutSteps.length) {
+                const nextStep = workoutSteps[currentStepIndex];
+                
+                // Add any overshoot from secondsPassed to the next step
+                stepTimeRemaining = nextStep.duration + stepTimeRemaining;
+                
+                playChimeForStep(nextStep.type);
+                updateThemeClass(nextStep.type);
+            } else {
+                // Workout Completed!
+                workoutState = 'complete';
+                playIcon.textContent = 'play_arrow';
+                stopTimerEngine();
+                releaseWakeLock();
+                synth.playVictoryChime();
+                
+                timerStateLabel.textContent = '¡COMPLETO!';
+                timerTimeDisplay.textContent = '00:00';
+                timerPhaseProgress.textContent = '¡Gran trabajo!';
+                updateThemeClass('complete');
+                
+                statTimeRemaining.textContent = '00:00';
+                statTimeElapsed.textContent = formatTime(totalWorkoutDuration);
+                
+                progressBar.style.width = '100%';
+                progressPercentage.textContent = '100%';
+                setRingProgress(1);
+                
+                // Mark all dots as done
+                const dots = timelineDots.querySelectorAll('.timeline-dot');
+                dots.forEach(d => {
+                    d.classList.remove('active');
+                    d.classList.add('done');
+                });
+                return;
+            }
+        } else {
+            // Normal countdown beeps (warning on final 3 seconds of a step)
+            if (stepTimeRemaining <= 3 && stepTimeRemaining > 0) {
+                synth.playBeep();
+            }
+        }
+        
+        updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+        if (workoutState !== 'playing' && workoutState !== 'paused') return;
+        
+        const step = workoutSteps[currentStepIndex];
+        
+        // Circular progress ring
+        const pctRemaining = stepTimeRemaining / step.duration;
+        setRingProgress(pctRemaining);
+        
+        // Digital display
+        timerStateLabel.textContent = translatePhase(step.type);
+        timerTimeDisplay.textContent = formatTime(stepTimeRemaining);
+        
+        if (step.type === 'prep') {
+            timerPhaseProgress.textContent = `Prepárate en ${stepTimeRemaining}s`;
+        } else {
+            timerPhaseProgress.textContent = `Ciclo ${step.cycle} • Int. ${step.interval}`;
+        }
+        
+        // Stats board
+        const timeRemainingTotal = Math.max(0, totalWorkoutDuration - totalTimeElapsed);
+        statTimeRemaining.textContent = formatTime(timeRemainingTotal);
+        statTimeElapsed.textContent = formatTime(totalTimeElapsed);
+        
+        if (step.cycle > 0) {
+            const totalCycles = parseInt(document.getElementById('input-cycles').value) || 1;
+            const totalIntervals = parseInt(document.getElementById('input-intervals').value) || 8;
+            statCycleProgress.textContent = `${step.cycle} / ${totalCycles}`;
+            statIntervalProgress.textContent = `${step.interval} / ${totalIntervals}`;
+        }
+        
+        // Main Progress Bar
+        const overallPct = Math.min(100, Math.floor((totalTimeElapsed / totalWorkoutDuration) * 100));
+        progressBar.style.width = `${overallPct}%`;
+        progressPercentage.textContent = `${overallPct}%`;
+        
+        // Update timeline dots visually
+        updateTimelineDotsVisual();
+    }
+
+    function updateTimelineDotsVisual() {
+        workoutSteps.forEach((step, idx) => {
+            if (step.type === 'prep') return;
+            const dot = document.getElementById(`dot-${idx}`);
+            if (!dot) return;
+            
+            if (idx < currentStepIndex) {
+                dot.className = `timeline-dot ${step.type} done`;
+            } else if (idx === currentStepIndex) {
+                dot.className = `timeline-dot ${step.type} active`;
+            } else {
+                dot.className = `timeline-dot ${step.type}`;
+            }
+        });
+    }
+
+    function skipStep() {
+        if (workoutState !== 'playing' && workoutState !== 'paused') return;
+        
+        // Calculate remaining seconds in current step and add them to elapsed
+        totalTimeElapsed += Math.max(0, stepTimeRemaining);
+        
+        // Force engine transition
+        stepTimeRemaining = 0;
+        
+        if (workoutState === 'paused') {
+            // Ticks once to execute transition while paused
+            tick(0);
+        } else {
+            // Normal running flow tick
+            tick(0);
+        }
+    }
+
+    function restartWorkout() {
+        stopTimerEngine();
+        workoutState = 'ready';
+        playIcon.textContent = 'play_arrow';
+        releaseWakeLock();
+        resetTimerUI();
+    }
+
+    // ── Helper Utilities ───────────────────────────────────────
+    function formatTime(secs) {
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function translatePhase(type) {
+        switch (type) {
+            case 'prep': return 'Preparación';
+            case 'work': return 'Trabajo';
+            case 'rest': return 'Descanso';
+            case 'cyclerest': return 'Descanso de Ciclo';
+            case 'complete': return '¡Completo!';
+            default: return '';
+        }
+    }
+
+    function updateThemeClass(type) {
+        document.body.className = ''; // Reset all classes
+        document.body.classList.add(`state-${type}`);
+    }
+
+    function setRingProgress(percentage) {
+        // Perimeter of circle r=120 is 753.98 (754 px)
+        const perimeter = 754;
+        const offset = perimeter - (percentage * perimeter);
+        timerRingFill.style.strokeDashoffset = offset;
+    }
+
+    function playChimeForStep(type) {
+        switch (type) {
+            case 'prep':
+                synth.playBeep();
+                break;
+            case 'work':
+                synth.playWorkChime();
+                break;
+            case 'rest':
+                synth.playRestChime();
+                break;
+            case 'cyclerest':
+                synth.playCycleRestChime();
+                break;
+        }
+    }
+
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, 
+            tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag] || tag)
+        );
+    }
+
+    // Toggle Settings panel visibility
+    function toggleSettings() {
+        settingsPanel.classList.toggle('show');
+        settingsToggleBtn.classList.toggle('active');
+    }
+
+    // ── Screen Wake Lock API ───────────────────────────────────
+    async function requestWakeLock() {
+        if ('wakeLock' in navigator) {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakelockBadge.classList.add('active');
+                console.log('Screen Wake Lock is active');
+            } catch (err) {
+                console.warn(`Screen Wake Lock failed: ${err.message}`);
+            }
+        }
+    }
+
+    function releaseWakeLock() {
+        if (wakeLock !== null) {
+            wakeLock.release().then(() => {
+                wakeLock = null;
+                wakelockBadge.classList.remove('active');
+                console.log('Screen Wake Lock released');
+            });
+        }
+    }
+
+    function handleVisibilityChange() {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+            requestWakeLock();
+        }
+    }
+</script>
+</body>
+</html>

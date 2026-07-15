@@ -151,6 +151,7 @@
     .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72);
       backdrop-filter: blur(6px); z-index: 500; display: flex;
       align-items: flex-end; justify-content: center; }
+    .hidden { display: none !important; }
     .overlay.hidden { display: none; }
     .sheet { background: var(--bg2); border-radius: 24px 24px 0 0;
       padding: 0 20px 44px; width: 100%; max-width: 430px;
@@ -674,7 +675,7 @@ function renderDetail(el) {
     const hmHtml = rows.map(row =>
       `<div class="heatmap-row">${row.map(d => {
         if (!d || d > t) return `<div class="hm-dot" style="background:${rgba(h.color,.07)}"></div>`;
-        return `<div class="hm-dot" style="background:${h.completions.has(d) ? h.color : rgba(h.color,.13)}"></div>`;
+        return `<div class="hm-dot" style="background:${h.completions.has(d) ? h.color : rgba(h.color,.13)};cursor:pointer" onclick="toggleDay('${h.id}','${d}')"></div>`;
       }).join('')}</div>`
     ).join('');
 
