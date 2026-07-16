@@ -40,6 +40,7 @@
         
         <!-- Left Column: Giant Interactive circular timer -->
         <main class="timer-panel">
+            <div class="active-exercise-banner" id="active-exercise-banner">Listo</div>
             <div class="timer-ring-container">
                 <svg class="timer-svg" viewBox="0 0 260 260">
                     <circle class="timer-ring-track" cx="130" cy="130" r="120"></circle>
@@ -112,6 +113,11 @@
                 <!-- Primary Play/Pause -->
                 <button class="btn-icon btn-primary" onclick="toggleWorkout()" title="Iniciar/Pausar" id="play-btn">
                     <span class="material-icons-round" id="play-icon">play_arrow</span>
+                </button>
+
+                <!-- Stop / Finish Workout -->
+                <button class="btn-icon btn-secondary" onclick="stopAndFinishWorkout()" title="Finalizar entrenamiento" id="stop-btn">
+                    <span class="material-icons-round">stop</span>
                 </button>
 
                 <!-- Skip forward -->
@@ -201,6 +207,18 @@
                 </div>
             </div>
 
+        <!-- Exercise Selection -->
+        <div class="exercise-settings-card">
+            <label class="input-label" style="display: flex; align-items: center; justify-content: space-between;">
+                <span>Ejercicios para la Sesión</span>
+                <span><span id="selected-exercises-count">0</span> seleccionados</span>
+            </label>
+            <div class="exercise-list-scroll" id="exercise-checkbox-list">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="exercise-help-text">
+                El número de ejercicios seleccionados determina la cantidad de intervalos por ciclo.
+            </div>
         </div>
 
         <!-- Audio Configuration -->
@@ -220,9 +238,9 @@
 
         <!-- Save Custom Preset -->
         <div class="preset-actions">
-            <button class="btn-preset-save" onclick="promptSavePreset()">
+            <button class="btn-preset-save" onclick="saveCustomPreset()">
                 <span class="material-icons-round">save</span>
-                Guardar como Preset
+                Guardar Personalizado
             </button>
             <button class="btn-preset-reset" onclick="resetToFactoryDefaults()">
                 Restablecer
@@ -427,6 +445,11 @@
     // ── Application State Variables ────────────────────────────
     let presets = [];
     let activePresetId = 'tabata-classic';
+    
+    // ── Exercise Selection State Variables ──────────────────────
+    let allExercises = [];
+    let selectedExercises = [];
+    
     let workoutState = 'ready'; // ready, playing, paused, complete
     let workoutSteps = [];
     let currentStepIndex = 0;
@@ -446,6 +469,7 @@
 
     // ── DOM References ─────────────────────────────────────────
     const timerStateLabel = document.getElementById('timer-state-label');
+    const activeExerciseBanner = document.getElementById('active-exercise-banner');
     const timerTimeDisplay = document.getElementById('timer-time-display');
     const timerPhaseProgress = document.getElementById('timer-phase-progress');
     const timerRingFill = document.getElementById('timer-ring-fill');
@@ -473,9 +497,10 @@
     const wakelockBadge = document.getElementById('wakelock-badge');
 
     // ── Lifecycle / Initialization ────────────────────────────
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
         loadSettingsFromStorage();
         initPresets();
+        await loadExercises();
         compileWorkoutSteps();
         resetTimerUI();
         
@@ -562,13 +587,10 @@
         }
     }
 
-    function promptSavePreset() {
-        const name = prompt('Introduce un nombre para tu preset:');
-        if (!name || name.trim() === '') return;
-        
+    function saveCustomPreset() {
         const newPreset = {
-            id: 'custom-' + Date.now(),
-            name: name.trim(),
+            id: 'custom-personalizado',
+            name: 'Personalizado',
             prep: parseInt(document.getElementById('input-prep').value) || 0,
             work: parseInt(document.getElementById('input-work').value) || 20,
             rest: parseInt(document.getElementById('input-rest').value) || 10,
@@ -577,10 +599,13 @@
             cyclerest: parseInt(document.getElementById('input-cyclerest').value) || 0
         };
         
-        const customPresets = JSON.parse(localStorage.getItem('tabata_custom_presets') || '[]');
+        let customPresets = JSON.parse(localStorage.getItem('tabata_custom_presets') || '[]');
+        // Eliminar duplicado si ya existe
+        customPresets = customPresets.filter(p => p.id !== 'custom-personalizado');
         customPresets.push(newPreset);
         localStorage.setItem('tabata_custom_presets', JSON.stringify(customPresets));
         
+        presets = presets.filter(p => p.id !== 'custom-personalizado');
         presets.push(newPreset);
         activePresetId = newPreset.id;
         
@@ -605,10 +630,11 @@
     }
 
     function resetToFactoryDefaults() {
-        if (!confirm('¿Restablecer presets de fábrica y configuraciones?')) return;
+        if (!confirm('¿Restablecer presets de fábrica, configuraciones y ejercicios?')) return;
         localStorage.removeItem('tabata_custom_presets');
         localStorage.removeItem('tabata_active_preset');
-        initPresets();
+        localStorage.removeItem('tabata_selected_exercises');
+        location.reload();
     }
 
     function loadSettingsFromStorage() {
@@ -699,6 +725,14 @@
                 activePresetNameSpan.textContent = 'Personalizado';
                 renderPresetMenu();
             }
+        }
+        
+        
+        // Sincronizar ejercicios seleccionados con el número de intervalos
+        const intervals = parseInt(document.getElementById('input-intervals').value) || 8;
+        if (typeof selectedExercises !== 'undefined' && selectedExercises.length !== intervals) {
+            adjustSelectedExercisesLength(intervals);
+            renderExerciseChecklist();
         }
         
         compileWorkoutSteps();
@@ -824,7 +858,14 @@
             const firstStep = workoutSteps[0];
             stepTimeRemaining = firstStep.duration;
             
-            timerStateLabel.textContent = translatePhase(firstStep.type);
+            // Si el paso inicial es trabajo, mostrar el nombre del ejercicio en el banner
+            if (firstStep.type === 'work') {
+                activeExerciseBanner.textContent = getExerciseForInterval(firstStep.interval);
+                timerStateLabel.textContent = translatePhase(firstStep.type);
+            } else {
+                activeExerciseBanner.textContent = translatePhase(firstStep.type);
+                timerStateLabel.textContent = translatePhase(firstStep.type);
+            }
             timerTimeDisplay.textContent = formatTime(stepTimeRemaining);
             
             if (firstStep.type === 'prep') {
@@ -855,6 +896,7 @@
                 d.classList.remove('active', 'done');
             });
         } else {
+            activeExerciseBanner.textContent = 'Listo';
             timerStateLabel.textContent = 'Listo';
             timerTimeDisplay.textContent = '00:00';
             timerPhaseProgress.textContent = 'Configura y presiona Play';
@@ -954,7 +996,8 @@
                 releaseWakeLock();
                 synth.playVictoryChime();
                 
-                timerStateLabel.textContent = '¡COMPLETO!';
+                activeExerciseBanner.textContent = '¡COMPLETO!';
+                timerStateLabel.textContent = 'Completo';
                 timerTimeDisplay.textContent = '00:00';
                 timerPhaseProgress.textContent = '¡Gran trabajo!';
                 updateThemeClass('complete');
@@ -994,11 +1037,25 @@
         setRingProgress(pctRemaining);
         
         // Digital display
-        timerStateLabel.textContent = translatePhase(step.type);
+        if (step.type === 'work') {
+            activeExerciseBanner.textContent = getExerciseForInterval(step.interval);
+            timerStateLabel.textContent = translatePhase(step.type);
+        } else {
+            activeExerciseBanner.textContent = translatePhase(step.type);
+            timerStateLabel.textContent = translatePhase(step.type);
+        }
         timerTimeDisplay.textContent = formatTime(stepTimeRemaining);
         
         if (step.type === 'prep') {
             timerPhaseProgress.textContent = `Prepárate en ${stepTimeRemaining}s`;
+        } else if (step.type === 'rest' || step.type === 'cyclerest') {
+            const nextWorkStep = findNextWorkStep(currentStepIndex);
+            if (nextWorkStep) {
+                const nextExercise = getExerciseForInterval(nextWorkStep.interval);
+                timerPhaseProgress.textContent = `Prepárate para: ${nextExercise}`;
+            } else {
+                timerPhaseProgress.textContent = `Ciclo ${step.cycle} • Int. ${step.interval}`;
+            }
         } else {
             timerPhaseProgress.textContent = `Ciclo ${step.cycle} • Int. ${step.interval}`;
         }
@@ -1066,6 +1123,64 @@
         resetTimerUI();
     }
 
+    function finishWorkoutEarly() {
+        workoutState = 'complete';
+        playIcon.textContent = 'play_arrow';
+        stopTimerEngine();
+        releaseWakeLock();
+        synth.playVictoryChime();
+        
+        activeExerciseBanner.textContent = '¡COMPLETO!';
+        timerStateLabel.textContent = 'Completo';
+        timerTimeDisplay.textContent = '00:00';
+        timerPhaseProgress.textContent = '¡Buen esfuerzo! (Finalizado antes)';
+        updateThemeClass('complete');
+        
+        statTimeRemaining.textContent = '00:00';
+        statTimeElapsed.textContent = formatTime(totalTimeElapsed);
+        
+        const overallPct = Math.min(100, Math.floor((totalTimeElapsed / totalWorkoutDuration) * 100));
+        progressBar.style.width = `${overallPct}%`;
+        progressPercentage.textContent = `${overallPct}%`;
+        setRingProgress(1);
+        
+        // Actualizar visualización de los puntos del timeline
+        workoutSteps.forEach((step, idx) => {
+            if (step.type === 'prep') return;
+            const dot = document.getElementById(`dot-${idx}`);
+            if (!dot) return;
+            
+            if (idx < currentStepIndex) {
+                dot.className = `timeline-dot ${step.type} done`;
+            } else {
+                dot.className = `timeline-dot ${step.type}`;
+            }
+        });
+    }
+
+    function stopAndFinishWorkout() {
+        if (workoutState !== 'playing' && workoutState !== 'paused') return;
+        
+        const wasPlaying = (workoutState === 'playing');
+        if (wasPlaying) {
+            workoutState = 'paused';
+            playIcon.textContent = 'play_arrow';
+            stopTimerEngine();
+            releaseWakeLock();
+        }
+        
+        if (confirm('¿Deseas finalizar el entrenamiento ahora y ver tu resumen?')) {
+            finishWorkoutEarly();
+        } else {
+            if (wasPlaying) {
+                workoutState = 'playing';
+                playIcon.textContent = 'pause';
+                requestWakeLock();
+                startTimerEngine();
+            }
+        }
+    }
+
     // ── Helper Utilities ───────────────────────────────────────
     function formatTime(secs) {
         const m = Math.floor(secs / 60);
@@ -1123,6 +1238,140 @@
                 '"': '&quot;'
             }[tag] || tag)
         );
+    }
+
+    // ── Exercise Selection Utilities ───────────────────────────
+    async function loadExercises() {
+        const defaultExercises = [
+            "Overhead Press por Detrás",
+            "Swings con Pesa Rusa",
+            "Peso Muerto Rumano",
+            "Sentadilla con Salto",
+            "Overhead Press",
+            "Clean y Press",
+            "Flexiones",
+            "Remo Balístico",
+            "Freestyle",
+            "Remo al Frente con Pesa",
+            "Press de Rango Completo",
+            "Molino",
+            "Halo",
+            "Curls de Bíceps",
+            "Pulls de Antebrazos",
+            "Sentadilla más Press",
+            "Péndulo",
+            "Elevación de Deltoides"
+        ];
+
+        try {
+            const response = await fetch('ejercicios.json', { cache: 'no-store' });
+            if (response.ok) {
+                allExercises = await response.json();
+            } else {
+                allExercises = [...defaultExercises];
+            }
+        } catch (e) {
+            console.warn("Could not fetch ejercicios.json, using defaults", e);
+            allExercises = [...defaultExercises];
+        }
+
+        const storedSelected = localStorage.getItem('tabata_selected_exercises');
+        const intervals = parseInt(document.getElementById('input-intervals').value) || 8;
+        
+        if (storedSelected) {
+            // Filtrar para remover cualquier ejercicio antiguo que ya no exista en allExercises
+            selectedExercises = JSON.parse(storedSelected).filter(ex => allExercises.includes(ex));
+        }
+        
+        adjustSelectedExercisesLength(intervals);
+        renderExerciseChecklist();
+    }
+
+    function adjustSelectedExercisesLength(targetLength) {
+        if (selectedExercises.length < targetLength) {
+            for (let i = 0; i < allExercises.length; i++) {
+                if (selectedExercises.length >= targetLength) break;
+                const ex = allExercises[i];
+                if (!selectedExercises.includes(ex)) {
+                    selectedExercises.push(ex);
+                }
+            }
+            while (selectedExercises.length < targetLength) {
+                selectedExercises.push(allExercises[selectedExercises.length % allExercises.length]);
+            }
+        } else if (selectedExercises.length > targetLength) {
+            selectedExercises = selectedExercises.slice(0, targetLength);
+        }
+        
+        localStorage.setItem('tabata_selected_exercises', JSON.stringify(selectedExercises));
+        
+        const countBadge = document.getElementById('selected-exercises-count');
+        if (countBadge) {
+            countBadge.textContent = selectedExercises.length;
+        }
+    }
+
+    function renderExerciseChecklist() {
+        const listContainer = document.getElementById('exercise-checkbox-list');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        allExercises.forEach(ex => {
+            const isChecked = selectedExercises.includes(ex);
+            const item = document.createElement('div');
+            item.className = `exercise-checkbox-item ${isChecked ? 'checked' : ''}`;
+            item.innerHTML = `
+                <input type="checkbox" value="${escapeHTML(ex)}" ${isChecked ? 'checked' : ''} onchange="toggleExercise(this)">
+                <span>${escapeHTML(ex)}</span>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+
+    function toggleExercise(checkbox) {
+        const exName = checkbox.value;
+        const isChecked = checkbox.checked;
+        
+        if (isChecked) {
+            if (!selectedExercises.includes(exName)) {
+                selectedExercises.push(exName);
+            }
+        } else {
+            if (selectedExercises.length <= 1) {
+                checkbox.checked = true;
+                alert("Debes seleccionar al menos 1 ejercicio.");
+                return;
+            }
+            selectedExercises = selectedExercises.filter(e => e !== exName);
+        }
+        
+        document.getElementById('input-intervals').value = selectedExercises.length;
+        
+        const countBadge = document.getElementById('selected-exercises-count');
+        if (countBadge) {
+            countBadge.textContent = selectedExercises.length;
+        }
+        
+        localStorage.setItem('tabata_selected_exercises', JSON.stringify(selectedExercises));
+        
+        checkbox.closest('.exercise-checkbox-item').classList.toggle('checked', isChecked);
+        
+        onSettingChanged();
+    }
+
+    function getExerciseForInterval(intervalIndex) {
+        if (selectedExercises.length === 0) return "Trabajo";
+        const idx = (intervalIndex - 1) % selectedExercises.length;
+        return selectedExercises[idx];
+    }
+
+    function findNextWorkStep(currentIndex) {
+        for (let idx = currentIndex + 1; idx < workoutSteps.length; idx++) {
+            if (workoutSteps[idx].type === 'work') {
+                return workoutSteps[idx];
+            }
+        }
+        return null;
     }
 
     // Toggle Settings panel visibility
