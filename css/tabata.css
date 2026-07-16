@@ -550,6 +550,17 @@ header {
     color: #fff;
 }
 
+/* Deshabilitar controles según el estado del entrenamiento */
+body.state-ready #stop-btn,
+body.state-ready #skip-btn,
+body.state-ready #reset-btn,
+body.state-complete #stop-btn,
+body.state-complete #skip-btn {
+    opacity: 0.25;
+    pointer-events: none;
+    cursor: default;
+}
+
 .btn-secondary {
     width: 46px;
     height: 46px;
@@ -816,6 +827,101 @@ header {
     box-shadow: 0 0 6px #10b981;
 }
 
+/* ── Exercise Selection Card ────────────────────────────── */
+.exercise-settings-card {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.exercise-list-scroll {
+    max-height: 180px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.exercise-list-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.exercise-list-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.exercise-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.exercise-checkbox-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.exercise-checkbox-item input[type="checkbox"] {
+    accent-color: var(--theme-color);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.exercise-checkbox-item span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.exercise-checkbox-item.checked {
+    background: rgba(var(--theme-color-rgb), 0.08);
+    border-color: rgba(var(--theme-color-rgb), 0.25);
+}
+
+.exercise-checkbox-item.checked span {
+    color: #fff;
+    font-weight: 500;
+}
+
+.exercise-help-text {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.4;
+}
+
+/* Active Exercise Banner */
+.active-exercise-banner {
+    font-size: 26px;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--theme-color);
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 15px rgba(var(--theme-color-rgb), 0.35);
+    transition: all 0.3s ease;
+    width: 100%;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ── Footer ─────────────────────────────────────────────── */
 footer {
     text-align: center;
@@ -873,6 +979,12 @@ footer {
         border-radius: 20px;
     }
     
+    .active-exercise-banner {
+        font-size: 20px;
+        margin-bottom: 15px;
+        min-height: 28px;
+    }
+    
     .timer-ring-container {
         width: 210px;
         height: 210px;
@@ -906,12 +1018,13 @@ footer {
     }
     
     .controls-card {
-        padding: 12px 16px;
+        padding: 12px 10px;
+        gap: 6px;
     }
     
     .btn-primary {
-        width: 56px;
-        height: 56px;
+        width: 52px;
+        height: 52px;
     }
     
     .btn-primary .material-icons-round {
@@ -919,7 +1032,17 @@ footer {
     }
     
     .btn-secondary {
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
+    }
+    
+    .btn-secondary .material-icons-round {
+        font-size: 18px;
+    }
+    
+    .wakelock-status {
+        padding: 4px 6px;
+        gap: 4px;
+        font-size: 9px;
     }
 }
